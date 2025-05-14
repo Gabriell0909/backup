@@ -1,0 +1,15 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 120,
+  "tabWidth": 3,
+  "semi": true,
+  "overrides": [
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "options": {
+        "parser": "babel"
+      }
+    }
+  ]
+}

@@ -1,11 +1,5 @@
-import Cadastro from "./src/screens/Cadastro/Cadastro";
+import Routes from './src/Navigation/index';
 
 export default function App() {
-  return (
-    <>
-     <Cadastro/>
-    </>
-  );
+   return <Routes />;
 }
-
-

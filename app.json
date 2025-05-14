@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.economiza.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -23,6 +24,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "packagerOpts":{
+      "config": "metro.config.js",
+      "sourceExts": ["js", "jsx", "ts", "tsx", "svg"]
     }
   }
 }
