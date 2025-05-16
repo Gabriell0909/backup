@@ -20,7 +20,7 @@ export default function Login({ navigation }) {
          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-         <StatusBar barStyle='default'/>
+         <StatusBar translucent backgroundColor="transparent"/>
          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             <View style={{ flex: 1, alignItems: 'center' }}>
                <SemiCirculo />
@@ -50,7 +50,7 @@ export default function Login({ navigation }) {
                         </Text>
                      )}
                   </Pressable>
-
+                  
                   <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomeStack')}>
                      <Text>Login</Text>
                   </TouchableOpacity>

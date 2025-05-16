@@ -46,9 +46,10 @@ export const styles = StyleSheet.create({
       //borderColor:'#0dd'
    },
    cardOptions: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      gap: 20,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
    },
 
    cardActionButton: {
@@ -66,10 +67,15 @@ export const styles = StyleSheet.create({
       height: 80,
       borderRadius: 90,
       backgroundColor: '#363636',
-      alignSelf:'flex-end',
-      margin:15,
-      borderColor:'#363636',
-      borderWidth:1
-      
+      alignSelf: 'flex-end',
+      margin: 15,
+      borderColor: '#363636',
+      borderWidth: 1,
+   },
+
+   containerActions: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 30,
    },
 });

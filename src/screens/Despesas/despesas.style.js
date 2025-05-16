@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
    titulo: {
       color: 'white',
       textAlign:'center',
-      fontSize:25
+      fontSize:25,
+      marginTop:42,
    },
 });

@@ -1,4 +1,13 @@
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import {
+   View,
+   Text,
+   TouchableOpacity,
+   KeyboardAvoidingView,
+   Platform,
+   ScrollView,
+   Alert,
+   StatusBar,
+} from 'react-native';
 
 import React, { useState } from 'react';
 import SemiCirculo from '../../components/semicirculo';
@@ -46,6 +55,7 @@ export default function Cadastro({ navigation }) {
          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
+         <StatusBar translucent backgroundColor='transparent'/>
          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
                <SemiCirculo />

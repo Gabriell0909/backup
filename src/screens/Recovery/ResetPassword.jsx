@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context"
-import { View,Text } from "react-native"
+import { View,Text, StatusBar } from "react-native"
 
 
 import Icons from "../../constants/icons"
@@ -11,6 +11,7 @@ import ButtonC from "../../components/customButton.jsx"
 export default function ResetPassword(){
     return(
         <SafeAreaView style={{flex:1}}>
+            <StatusBar barStyle={"dark-content"}/>
             <View style ={Styles.container}>
                 <Icons.Face/>
 

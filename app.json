@@ -25,9 +25,20 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "packagerOpts":{
+    "packagerOpts": {
       "config": "metro.config.js",
-      "sourceExts": ["js", "jsx", "ts", "tsx", "svg"]
+      "sourceExts": [
+        "js",
+        "jsx",
+        "ts",
+        "tsx",
+        "svg"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fdcf3d9d-b03e-4304-9a8e-6052743771ae"
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text } from "react-native";
+import { View, Text, StatusBar } from "react-native";
 
 
 import Icons from "../../constants/icons";
@@ -7,9 +7,10 @@ import {Styles} from "./Recovery.style.js";
 import Input from "../../components/inputs.jsx"
 import Button from "../../components/customButton.jsx"
 
-export default function Recovery() {
+export default function Recovery({navigation}) {
   return (
     <SafeAreaView style ={{flex:1}}>
+        <StatusBar barStyle={"dark-content"}/>
         <View style={Styles.container}>
             <Icons.Face />
 
@@ -24,7 +25,7 @@ export default function Recovery() {
             <Icons.Pig style={Styles.pig}/>
 
             <View style={{marginTop:140, flex:1}}>
-                <Button>
+                <Button onPress={()=>{navigation.navigate('')}}>
                     <Text>Enviar</Text>
                 </Button>
             </View>
