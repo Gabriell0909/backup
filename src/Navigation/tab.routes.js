@@ -16,6 +16,7 @@ export default function TabRoutes() {
             component={Home}
             options={{
                headerShown: false,
+               tabBarHideOnKeyboard:true,
                tabBarIcon: ({ color, size, focused }) => {
                   if (focused) {
                      return <Ionicons name="home" size={size} color={color} />;
@@ -30,6 +31,7 @@ export default function TabRoutes() {
             component={Gasto}
             options={{
                headerShown: false,
+               tabBarHideOnKeyboard: true,
                tabBarIcon: ({ color, size, focused }) => {
                   if (focused) {
                      return <Ionicons name="add" size={size} color={color} />;
@@ -44,6 +46,7 @@ export default function TabRoutes() {
             component={Despesas}
             options={{
                headerShown: false,
+               tabBarHideOnKeyboard:true,
 
                tabBarIcon: ({ color, size, focused }) => {
                   if (focused) {

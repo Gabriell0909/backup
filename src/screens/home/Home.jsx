@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { View, Text, ImageBackground, Image, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './Home.style';
 import Card from '../../components/card';
+import Input from '../../components/inputs'
 import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
+import BottomSheetCustom from '../../components/bottomSheet';
 import Icons from '../../constants/icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -24,6 +26,7 @@ export default function Home({ navigation }) {
    const [backgroundImage, setBackgroundImage] = useState({ uri: imagemCapa });
    const imagemValida = backgroundImage?.uri?.length > 0;
 
+   const sheetRef = useRef(null);
    return (
       <SafeAreaProvider>
          <SafeAreaView style={{ flex: 1 }}>
@@ -54,17 +57,26 @@ export default function Home({ navigation }) {
                   </View>
 
                   <View style={styles.sectionButton}>
-                     <ButtonS style={styles.button} activeOpacity={0.8}>
+                     <ButtonS
+                        style={styles.button}
+                        activeOpacity={0.8}
+                        onPress={() => {
+                           sheetRef.current?.snapToIndex(1);
+                        }}
+                     >
                         <Text> ADICIONAR</Text>
                      </ButtonS>
                   </View>
                </Card>
 
                <Card>
-                  <View style = {styles.containerActions}>
-
+                  <View style={styles.containerActions}>
                      <View style={styles.cardOptions}>
-                        <ButtonS style={styles.cardActionButton}>
+                        <ButtonS
+                           style={styles.cardActionButton}
+                           onPress={() => {
+                           }}
+                        >
                            <Ionicons name="person-circle-sharp" size={42} />
                         </ButtonS>
                         <Text style={styles.text}>Devedores</Text>
@@ -86,6 +98,15 @@ export default function Home({ navigation }) {
                   </View>
                </Card>
             </View>
+
+            <BottomSheetCustom sheetRef={sheetRef}>
+               <Input/>
+               <Input/>
+               <ButtonS>
+                  <Text> Salvar </Text>
+               </ButtonS>
+            </BottomSheetCustom>
+
          </SafeAreaView>
       </SafeAreaProvider>
    );

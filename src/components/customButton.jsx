@@ -1,10 +1,8 @@
-import { StyleSheet, TouchableOpacity, View  } from 'react-native';
-export default function ButtonOpacity({ children, style, activeOpacity, Icon,onPress }) {
+import { StyleSheet, TouchableOpacity } from 'react-native';
+export default function ButtonOpacity({ children, style, activeOpacity, onPress }) {
    return (
       <TouchableOpacity style={[styles.button, style]} activeOpacity={activeOpacity} onPress={onPress}>
-         
-            {children}
-          
+         {children}
       </TouchableOpacity>
    );
 }
@@ -19,6 +17,5 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       alignItems: 'center',
       justifyContent: 'center',
-      
    },
 });

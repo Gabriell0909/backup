@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
    CardNoImage: {
       width: '100%',
       aspectRatio: 1.7,
-      borderRadius: 15,
+      borderRadius: 35,
       backgroundColor: '#232323',
       alignItems: 'center',
       marginVertical: 10,
@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
    cardImage: {
       width: '100%',
       aspectRatio: 1.7,
-      borderRadius: 15,
+      borderRadius: 35,
       overflow: 'hidden',
       alignItems: 'center',
       marginVertical: 10,

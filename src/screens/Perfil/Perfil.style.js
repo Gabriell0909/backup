@@ -6,7 +6,9 @@ export const styles = StyleSheet.create({
     },
 
     container:{
-
+        flex:1,
+        borderColor:'red',
+        borderWidth:1,
     },
 
     linear1:{
@@ -14,6 +16,9 @@ export const styles = StyleSheet.create({
         marginTop:25,
         justifyContent:'space-between',
         marginHorizontal:15,
+        
+        borderColor:'red',
+        borderWidth:1,
     },
 
     titulo:{
