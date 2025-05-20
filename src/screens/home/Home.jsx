@@ -3,7 +3,7 @@ import { View, Text, ImageBackground, Image, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './Home.style';
 import Card from '../../components/card';
-import Input from '../../components/inputs'
+import Input from '../../components/inputs';
 import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
 import BottomSheetCustom from '../../components/bottomSheet';
@@ -75,15 +75,17 @@ export default function Home({ navigation }) {
                         <ButtonS
                            style={styles.cardActionButton}
                            onPress={() => {
+                              navigation.navigate('DevedoresStack');
                            }}
                         >
                            <Ionicons name="person-circle-sharp" size={42} />
                         </ButtonS>
+
                         <Text style={styles.text}>Devedores</Text>
                      </View>
 
                      <View style={styles.cardOptions}>
-                        <ButtonS style={styles.cardActionButton}>
+                        <ButtonS style={styles.cardActionButton} onPress={() =>{ navigation.navigate('CategoriaStack')}}>
                            <Ionicons name="layers-outline" size={42} />
                         </ButtonS>
                         <Text style={styles.text}>Categorias</Text>
@@ -100,13 +102,12 @@ export default function Home({ navigation }) {
             </View>
 
             <BottomSheetCustom sheetRef={sheetRef}>
-               <Input/>
-               <Input/>
+               <Input />
+               <Input />
                <ButtonS>
                   <Text> Salvar </Text>
                </ButtonS>
             </BottomSheetCustom>
-
          </SafeAreaView>
       </SafeAreaProvider>
    );

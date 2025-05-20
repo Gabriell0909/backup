@@ -25,14 +25,14 @@ export default function BottomSheetCustom({ sheetRef, children }) {
 const styles = StyleSheet.create({
    contentContainer: {
       alignItems: 'center',
-      padding: 20,
+      padding: 35,
       gap: 20,
    },
 
    handleIndicator: {
       backgroundColor: '#999',
       width: 45,
-      height: 7
+      height: 7,
    },
 
    bottomSheetCustom:{
