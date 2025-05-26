@@ -81,5 +81,14 @@ export const styles = StyleSheet.create({
       width:100,
       borderRadius:20,
       marginTop:10,
+   },
+   typeOfExpenseButton:{
+      borderRadius:25,
+      minHeight:40,
+      width:120,
+   },
+   titleTypeOfExpense:{
+      textAlign:'center',
+      fontSize: 20
    }
 });

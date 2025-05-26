@@ -1,19 +1,25 @@
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useMemo } from 'react';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export default function BottomSheetCustom({ sheetRef, children }) {
    const snapPoints = useMemo(() => ['50%', '70%'], []);
+
+   const renderBackDrop = useCallback(
+      (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,
+      [],
+   );
+
 
    return (
       <BottomSheet
          ref={sheetRef}
          index={-1}
          snapPoints={snapPoints}
-         style={styles.sheetView}
          enablePanDownToClose={true}
          handleIndicatorStyle={styles.handleIndicator}
-         backgroundStyle = {styles.bottomSheetCustom}
+         backgroundStyle={styles.bottomSheetCustom}
+         backdropComponent={renderBackDrop}
       >
          <BottomSheetView>
             <View style={styles.contentContainer}>{children}</View>
@@ -35,7 +41,7 @@ const styles = StyleSheet.create({
       height: 7,
    },
 
-   bottomSheetCustom:{
-      borderRadius:30,
-   }
+   bottomSheetCustom: {
+      borderRadius: 30,
+   },
 });

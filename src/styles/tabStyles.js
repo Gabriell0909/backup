@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
    tabStyle: {
-      position: 'absolute',
+      
       backgroundColor: '#232323',
       borderTopWidth: 0,
 
