@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import App from '../Database/FirebaseConfig.js';
+import App from '../Config/FirebaseConfig.js';
 
 const auth = getAuth(App);
 

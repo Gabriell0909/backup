@@ -13,9 +13,6 @@ const Stack = createNativeStackNavigator();
 export default function NavigateStacks() {
    return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-         <Stack.Screen name="LoginStack" component={Login} />
-         <Stack.Screen name="RecoveryStack" component={Recovery} />
-         <Stack.Screen name="CadastroStack" component={Cadastro} />
          <Stack.Screen name="DevedoresStack" component={Devedores}/>
          <Stack.Screen name="CategoriaStack" component={Categorias}/>
          <Stack.Screen name="HomeStack" component={TabRoutes} />
