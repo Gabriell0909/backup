@@ -12,9 +12,11 @@ export default function App() {
 
    const {user, initializing} = useAuth()
 
-   // if(initializing){
-   //    return <LoadScreen/>
-   // }
+
+   if(initializing){
+      return <LoadScreen/>
+   }
+
    return (
       <GestureHandlerRootView style = {{flex:1}}>
          <Routes user={user}/>
