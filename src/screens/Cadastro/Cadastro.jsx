@@ -41,8 +41,10 @@ export default function Cadastro({ navigation }) {
       }
 
       try {
-         await CadastrarUsuario(email, senha);
-         navigation.navigate('HomeStack');
+         const cadastroSucess = await CadastrarUsuario(email, senha);
+         if (cadastroSucess) {
+            navigation.navigate('MainHomeTabs');
+         }
       } catch (error) {
          console.log('Erro ao cadastrar', error);
          Alert.alert('Erro', 'Não foi possível cadastrar o usuário.');
@@ -55,7 +57,7 @@ export default function Cadastro({ navigation }) {
          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-         <StatusBar translucent backgroundColor='transparent'/>
+         <StatusBar translucent backgroundColor="transparent" />
          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
                <SemiCirculo />

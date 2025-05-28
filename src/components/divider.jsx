@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-export default function Divider() {
-   return <View style={styles.line}></View>;
+export default function Divider({style}) {
+   return <View style={[styles.line, style]}></View>;
 }
 
 const styles = StyleSheet.create({

@@ -24,6 +24,7 @@ export default function Home({ navigation }) {
 
    const imagemCapa = 'https://cdn-1.motorsport.com/images/amp/YKEZbVX0/s1000/ferrari-499p-1.jpg';
    const [backgroundImage, setBackgroundImage] = useState({ uri: imagemCapa });
+   
    const imagemValida = backgroundImage?.uri?.length > 0;
 
    const sheetRef = useRef(null);
@@ -75,7 +76,7 @@ export default function Home({ navigation }) {
                         <ButtonS
                            style={styles.cardActionButton}
                            onPress={() => {
-                              navigation.navigate('DevedoresStack');
+                              navigation.navigate('DevedoresScreen');
                            }}
                         >
                            <Ionicons name="person-circle-sharp" size={42} />
@@ -85,7 +86,7 @@ export default function Home({ navigation }) {
                      </View>
 
                      <View style={styles.cardOptions}>
-                        <ButtonS style={styles.cardActionButton} onPress={() =>{ navigation.navigate('CategoriaStack')}}>
+                        <ButtonS style={styles.cardActionButton} onPress={() =>{ navigation.navigate('CategoriasScreen')}}>
                            <Ionicons name="layers-outline" size={42} />
                         </ButtonS>
                         <Text style={styles.text}>Categorias</Text>

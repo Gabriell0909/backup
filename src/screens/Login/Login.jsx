@@ -23,7 +23,7 @@ export default function Login({ navigation }) {
    const handleLogin = async () => {
       try {
          await FazerLogin(email, senha);
-         navigation.navigate('HomeStack');
+         // navigation.navigate('MainHomeTabs');
       } catch (error) {
          console.log('paiou o login rapeize 🙂👍', error.message);
          throw error;

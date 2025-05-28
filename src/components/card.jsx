@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-export default function Card({ children, style, f }) {
+export default function Card({ children, style }) {
    return <View style={[styles.container, style]}>{children}</View>;
 }
 
