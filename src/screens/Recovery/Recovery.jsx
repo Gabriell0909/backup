@@ -1,5 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, StatusBar } from "react-native";
+import { Ionicons} from '@expo/vector-icons'
 
 
 import Icons from "../../constants/icons";
@@ -15,7 +16,9 @@ export default function Recovery({navigation}) {
             <Icons.Face />
 
             <View style={Styles.view}>
-                <Input style={Styles.input} placeholder="exemplo123@gmail.com" maxLength={40}/>
+                <Input style={Styles.input} placeholder="exemplo123@gmail.com" maxLength={40}>
+                <Ionicons name="mail-outline" size={24}/>
+                </Input>
             </View>
 
             <Text style={Styles.texto}>

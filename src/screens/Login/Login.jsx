@@ -7,7 +7,10 @@ import {
    ScrollView,
    Platform,
    StatusBar,
+   TextInput,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import SemiCirculo from '../../components/semicirculo';
 import Input from '../../components/inputs';
 import Icons from '../../constants/icons';
@@ -17,13 +20,14 @@ import { FazerLogin } from '../../Auth/AuthLogin';
 import { useState } from 'react';
 
 export default function Login({ navigation }) {
+   const [hidden, setHidden] = useState(true);
+
    const [email, setEmail] = useState('');
    const [senha, setSenha] = useState('');
 
    const handleLogin = async () => {
       try {
          await FazerLogin(email, senha);
-         // navigation.navigate('MainHomeTabs');
       } catch (error) {
          console.log('paiou o login rapeize 🙂👍', error.message);
          throw error;
@@ -50,25 +54,45 @@ export default function Login({ navigation }) {
                      onChangeText={(text) => {
                         setEmail(text);
                      }}
-                  />
+                  >
+                     <Ionicons name="mail-outline" size={24} color={'#000'} />
+                  </Input>
+
                   <Input
                      placeholder="Digite sua senha"
                      maxLength={40}
-                     secureTextEntry
+                     secureTextEntry={hidden}
+                     value={senha}
                      onChangeText={(text) => {
                         setSenha(text);
                      }}
-                  />
+                     rightIcon={
+                        <Ionicons
+                           name={hidden ? 'eye-off-outline' : 'eye-outline'}
+                           size={24}
+                           color="#000"
+                           onPress={() => {
+                              setHidden(!hidden);
+                           }}
+                        />
+                     }
+                  >
+                     <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
+                  </Input>
 
                   <Pressable onPress={() => navigation.navigate('AuthRecovery')}>
                      {({ pressed }) => (
-                        <Text style={[styles.recovery, pressed && { color: '#0077b6' }]}>Esqueceu a senha?</Text>
+                        <Text style={[styles.recovery, pressed && { color: '#0077b6' }]}>
+                           Esqueceu a senha?
+                        </Text>
                      )}
                   </Pressable>
 
                   <Pressable onPress={() => navigation.navigate('AuthCadastro')}>
                      {({ pressed }) => (
-                        <Text style={[styles.register, pressed && { color: '#0077b6' }]}>Não tenho conta</Text>
+                        <Text style={[styles.register, pressed && { color: '#0077b6' }]}>
+                           Não tenho conta
+                        </Text>
                      )}
                   </Pressable>
 
