@@ -21,6 +21,7 @@ export const styles = StyleSheet.create({
 
    inputs: {
       width: '90%',
+      height:50,
       paddingStart:10,
       marginTop:30
    },

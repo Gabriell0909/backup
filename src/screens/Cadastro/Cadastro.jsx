@@ -9,16 +9,15 @@ import {
    StatusBar,
 } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
-import { use, useState } from 'react';
+import { Ionicons, Feather } from '@expo/vector-icons';
+import { useState } from 'react';
 import SemiCirculo from '../../components/semicirculo';
 import { styles } from './Cadastro.style.js';
-import Input from '../../components/inputs.jsx';
+import InputAuth from '../../components/InputAuth/inputsAuth.jsx';
 import Icons from '../../constants/icons';
 
 import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/Rules';
 import { CadastrarUsuario } from '../../Auth/AuthCadastro.js';
-import { IOSReferenceFrame } from 'react-native-reanimated';
 
 export default function Cadastro({ navigation }) {
    const [hidden, setHidden] = useState(true);
@@ -46,10 +45,7 @@ export default function Cadastro({ navigation }) {
       }
 
       try {
-         const cadastroSucess = await CadastrarUsuario(email, senha);
-         if (cadastroSucess) {
-            navigation.navigate('MainHomeTabs');
-         }
+         await CadastrarUsuario(email, senha);
       } catch (error) {
          console.log('Erro ao cadastrar', error);
          Alert.alert('Erro', 'Não foi possível cadastrar o usuário.');
@@ -71,7 +67,8 @@ export default function Cadastro({ navigation }) {
                <Text style={styles.titulo}>Cadastro</Text>
 
                <View style={styles.group}>
-                  <Input
+             
+                  <InputAuth
                      placeholder="Exemplo123@gmail.com"
                      maxLength={40}
                      onChangeText={(text) => {
@@ -82,11 +79,11 @@ export default function Cadastro({ navigation }) {
                      erro={!!erroEmail}
                   >
                      <Ionicons name="mail-outline" size={24} />
-                  </Input>
+                  </InputAuth>
 
                   {erroEmail ? <Text style={styles.errorText}>{erroEmail}</Text> : null}
 
-                  <Input
+                  <InputAuth
                      placeholder="Digite sua senha"
                      maxLength={8}
                      secureTextEntry={hidden}
@@ -108,11 +105,11 @@ export default function Cadastro({ navigation }) {
                      erro={!!erroSenha}
                   >
                      <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
-                  </Input>
+                  </InputAuth>
 
                   {erroSenha ? <Text style={styles.errorText}>{erroSenha}</Text> : null}
 
-                  <Input
+                  <InputAuth
                      placeholder="Repita sua senha"
                      maxLength={8}
                      secureTextEntry={hiddenConfirmation}
@@ -133,7 +130,7 @@ export default function Cadastro({ navigation }) {
                      erro={!!erroSenhaConfirmada}
                   >
                      <Ionicons name="lock-closed-outline" size={24} />
-                  </Input>
+                  </InputAuth>
 
                   {erroSenhaConfirmada ? <Text style={styles.errorText}>{erroSenhaConfirmada}</Text> : null}
 

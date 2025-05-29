@@ -7,9 +7,11 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 
 import Card from '../../components/card';
 import Input from '../../components/inputs';
+import InputDescription from './components/InputDescription';
 import ButtonA from '../../components/customButton';
 import BottomCustom from '../../components/bottomSheet';
 import { ptBR } from '../../Utils/LocaleCalendarConfig';
+import InputShort from './components/InputShort';
 
 LocaleConfig.locales['pt-br'] = ptBR;
 LocaleConfig.defaultLocale = 'pt-br';
@@ -28,8 +30,8 @@ export default function LançarGastos() {
    return (
       <KeyboardAvoidingView
          style={{ flex: 1 }}
-         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 30}
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+         keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
       >
          <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', gap: 30 }}>
             <StatusBar barStyle={'light-content'} backgroundColor="transparent" translucent />
@@ -40,89 +42,91 @@ export default function LançarGastos() {
                </View>
             </Card>
 
-            <View style={styles.containerViews}>
-               <Input style={styles.inputTitle} placeholder="Título" multiline={false} />
-               <ButtonA
-                  style={styles.button}
-                  onPress={() => {
-                     openBottomSheet('devedores');
-                  }}
-               >
-                  <Ionicons name="person-circle-outline" size={32} />
-                  <Text>Devedor</Text>
-               </ButtonA>
-            </View>
+            <View style={styles.group}>
 
-            <View style={styles.containerViews}>
-               <Input
-                  style={styles.inputDescricao}
-                  numberOfLines={6}
-                  placeholder="Descreva detalhes sobre o gasto"
-                  multiline={true}
-               />
-            </View>
-
-            <View style={styles.containerViews}>
-               <ButtonA
-                  style={styles.button}
-                  onPress={() => {
-                     openBottomSheet('contas');
-                  }}
-               >
-                  <Ionicons name="card-outline" size={32} />
-                  <Text>Conta</Text>
-               </ButtonA>
-               <ButtonA
-                  style={styles.categoria}
-                  onPress={() => {
-                     openBottomSheet('categorias');
-                  }}
-               >
-                  <Ionicons name="layers-outline" size={32} />
-                  <Text>Categoria</Text>
-               </ButtonA>
-               <ButtonA
-                  style={styles.calendario}
-                  onPress={() => {
-                     openBottomSheet('calendario');
-                  }}
-               >
-                  <Ionicons name="calendar-outline" size={32} />
-               </ButtonA>
-            </View>
-
-            <View style={styles.containerViews}>
-               <Input style={styles.inputP} placeholder="R$ 0,00" />
-            </View>
-
-            <View>
-               <Text style={styles.textDescription}>Tipo de gasto</Text>
                <View style={styles.containerViews}>
-                  <ButtonA style={styles.typeOfExpense} onPress={() => {}}>
-                     <Text>Único</Text>
-                  </ButtonA>
+
+                  <InputShort style={styles.inputTitle} placeholder="Título" multiline={false} />
                   <ButtonA
-                     style={styles.typeOfExpense}
+                     style={styles.button}
                      onPress={() => {
-                        openBottomSheet('tipoDeGasto');
+                        openBottomSheet('devedores');
                      }}
                   >
-                     <Text>Recorrente</Text>
-                  </ButtonA>
-                  <ButtonA
-                     style={styles.typeOfExpense}
-                     onPress={() => {
-                        openBottomSheet('parcelas');
-                     }}
-                  >
-                     <Text>Parcelado</Text>
+                     <Ionicons name="person-circle-outline" size={32} />
+                     <Text>Devedor</Text>
                   </ButtonA>
                </View>
-            </View>
 
-            <ButtonA style={{ marginTop: 0 }}>
-               <Text style={styles.textDescription}>Salvar</Text>
-            </ButtonA>
+               <InputDescription
+                  style={styles.inputDescricao}
+                  placeholder="Descreva seu gasto"
+                  multiline={true}
+                  numberOfLines={6}
+               />
+
+               <View style={styles.containerGroupButton}>
+                  <ButtonA
+                     style={styles.button}
+                     onPress={() => {
+                        openBottomSheet('contas');
+                     }}
+                  >
+                     <Ionicons name="card-outline" size={32} />
+                     <Text>Conta</Text>
+                  </ButtonA>
+                  <ButtonA
+                     style={styles.categoria}
+                     onPress={() => {
+                        openBottomSheet('categorias');
+                     }}
+                  >
+                     <Ionicons name="layers-outline" size={32} />
+                     <Text>Categoria</Text>
+                  </ButtonA>
+                  <ButtonA
+                     style={styles.calendario}
+                     onPress={() => {
+                        openBottomSheet('calendario');
+                     }}
+                  >
+                     <Ionicons name="calendar-outline" size={32} />
+                  </ButtonA>
+               </View>
+
+               <View style={styles.containerViews}>
+                  <Input style={styles.inputP} placeholder="R$ 0,00" />
+               </View>
+
+               <View>
+                  <Text style={styles.textDescription}>Tipo de gasto</Text>
+                  <View style={styles.containerGastos}>
+                     <ButtonA style={styles.typeOfExpense} onPress={() => {}}>
+                        <Text>Único</Text>
+                     </ButtonA>
+                     <ButtonA
+                        style={styles.typeOfExpense}
+                        onPress={() => {
+                           openBottomSheet('tipoDeGasto');
+                        }}
+                     >
+                        <Text>Recorrente</Text>
+                     </ButtonA>
+                     <ButtonA
+                        style={styles.typeOfExpense}
+                        onPress={() => {
+                           openBottomSheet('parcelas');
+                        }}
+                     >
+                        <Text>Parcelado</Text>
+                     </ButtonA>
+                  </View>
+               </View>
+
+               <ButtonA style={{ marginTop: 15 }}>
+                  <Text style={styles.textDescription}>Salvar</Text>
+               </ButtonA>
+            </View>
          </ScrollView>
 
          <BottomCustom sheetRef={sheetRef}>
@@ -190,7 +194,7 @@ export default function LançarGastos() {
             )}
 
             {active === 'tipoDeGasto' && (
-               <View style = {{alignItems:'center'}}>
+               <View style={{ alignItems: 'center' }}>
                   <Text style={styles.titleTypeOfExpense}>Tipo de gasto</Text>
                   <ButtonA style={styles.typeOfExpenseButton}>
                      <Text>Anual</Text>

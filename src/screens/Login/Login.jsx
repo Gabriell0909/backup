@@ -12,12 +12,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import SemiCirculo from '../../components/semicirculo';
-import Input from '../../components/inputs';
 import Icons from '../../constants/icons';
 import { styles } from './Login.style';
 
 import { FazerLogin } from '../../Auth/AuthLogin';
 import { useState } from 'react';
+import InputAuth from '../../components/InputAuth/inputsAuth';
 
 export default function Login({ navigation }) {
    const [hidden, setHidden] = useState(true);
@@ -47,7 +47,7 @@ export default function Login({ navigation }) {
                <Text style={styles.titulo}>Login</Text>
 
                <View style={styles.container}>
-                  <Input
+                  <InputAuth
                      placeholder="Exemplo123@gmail.com"
                      maxLength={40}
                      keyboardType="email-address"
@@ -56,9 +56,9 @@ export default function Login({ navigation }) {
                      }}
                   >
                      <Ionicons name="mail-outline" size={24} color={'#000'} />
-                  </Input>
+                  </InputAuth>
 
-                  <Input
+                  <InputAuth
                      placeholder="Digite sua senha"
                      maxLength={40}
                      secureTextEntry={hidden}
@@ -78,7 +78,7 @@ export default function Login({ navigation }) {
                      }
                   >
                      <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
-                  </Input>
+                  </InputAuth>
 
                   <Pressable onPress={() => navigation.navigate('AuthRecovery')}>
                      {({ pressed }) => (

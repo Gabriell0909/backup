@@ -11,11 +11,11 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'column',
       gap: 15,
-      marginTop: 30,
+      marginTop: 20,
    },
 
    input: {
-      width: '90%',
+      width: '50%',
       height: 50,
       borderColor: '#000',
       borderWidth: 1,
