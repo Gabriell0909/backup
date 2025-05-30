@@ -5,7 +5,6 @@ import TabRoutes from './tab.routes';
 
 import Devedores from '../screens/Devedores/Devedores';
 import Categorias from '../screens/Categorias/Categorias';
-
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
