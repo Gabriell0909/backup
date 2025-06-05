@@ -16,7 +16,7 @@ import { styles } from './Cadastro.style.js';
 import InputAuth from '../../components/InputAuth/inputsAuth.jsx';
 import Icons from '../../constants/icons';
 
-import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/Rules';
+import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/AuthRules/cadastro/Rules.js';
 import { CadastrarUsuario } from '../../Auth/AuthCadastro.js';
 
 export default function Cadastro({ navigation }) {

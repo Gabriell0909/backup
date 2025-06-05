@@ -1,4 +1,4 @@
-import { errorMessages } from './ErrosMenssages';
+import { errorMessages } from '../ErrosMenssages';
 
 export function validarEmail(email) {
   if (email.trim() === '') {

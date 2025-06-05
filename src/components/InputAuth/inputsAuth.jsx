@@ -1,10 +1,10 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 
-function InputAuth({ value, erro, style, children,rightIcon, ...props }) {
+function InputAuth({ value, erro, style, children, rightIcon, ...props }) {
    return (
-      <View style={styles.container}>
+      <View style={[styles.container, erro && styles.containerErro, style]}>
          {children}
-         <TextInput value={value} style={[styles.input, erro && styles.inputErro, style]} {...props} />
+         <TextInput value={value} style={styles.input} {...props} />
          {rightIcon}
       </View>
    );
@@ -23,15 +23,16 @@ const styles = StyleSheet.create({
    },
 
    input: {
-      flex:1,
-      height:'100%',
+      flex: 1,
+      height: '100%',
       borderRadius: 10,
       paddingLeft: 8,
       fontSize: 16,
    },
 
-   inputErro: {
+   containerErro: {
       borderColor: 'red',
+      borderWidth: 1,
    },
 });
 
