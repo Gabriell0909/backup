@@ -33,12 +33,13 @@ export default function Login({ navigation }) {
    const [alertVisible, setAlertVisible] = useState(false);
    const [alertMessage, setAlertMessage] = useState('');
 
-   const onBlur = () => {
-      const erroSenha = validarSenha(senha);
+   const onBlurEmail = () => {
       const erroEmail = validarEmail(email);
-
-      setErroSenha(!!erroSenha);
       setErroEmail(!!erroEmail);
+   };
+   const onBlurSenha = () => {
+      const erroSenha = validarSenha(senha);
+      setErroSenha(!!erroSenha);
    };
 
    const handleLogin = async () => {
@@ -66,8 +67,11 @@ export default function Login({ navigation }) {
          } else {
             setAlertMessage(error.message || 'erro ao fazer login');
          }
-         if( error.code === 'auth/too-many-requests'){
-            setAlertMessage(errorMessages.tooManyRequests)
+         if (error.code === 'auth/too-many-requests') {
+            setAlertMessage(errorMessages.tooManyRequests);
+         }
+         if(error.code === 'auth/email-already-in-use'){
+            setAlertMessage(errorMessages.emailAlreadyInUse)
          }
          setAlertVisible(true);
       }
@@ -101,7 +105,7 @@ export default function Login({ navigation }) {
                         setEmail(text);
                         setErroEmail(false);
                      }}
-                     onBlur={onBlur}
+                     onBlur={onBlurEmail}
                   >
                      <Ionicons name="mail-outline" size={24} color={'#000'} />
                   </InputAuth>
@@ -116,7 +120,7 @@ export default function Login({ navigation }) {
                         setSenha(text);
                         setErroSenha(false);
                      }}
-                     onBlur={onBlur}
+                     onBlur={onBlurSenha}
                      rightIcon={
                         <Ionicons
                            name={hidden ? 'eye-off-outline' : 'eye-outline'}

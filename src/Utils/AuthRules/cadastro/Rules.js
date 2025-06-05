@@ -1,6 +1,6 @@
 import { errorMessages } from '../ErrosMenssages';
 
-export function validarEmail(email) {
+export function validarEmail(email = '') {
   if (email.trim() === '') {
     return errorMessages.missingEmail || 'Informe seu e‑mail.';
   }
@@ -13,17 +13,17 @@ export function validarEmail(email) {
   return '';
 }
 
-export function validarSenha(senha) {
+export function validarSenha(senha = '') {
   if (senha.trim() === '') {
     return errorMessages.missingPassword;
   }
-  if (senha.length < 6) {
+  if (senha.length < 8) {
     return errorMessages.weakPassword;
   }
   return '';
 }
 
-export function validarSenhaConfirmada(senha, senhaConfirmada) {
+export function validarSenhaConfirmada(senha ='', senhaConfirmada = '') {
   if (senhaConfirmada.trim() === '') {
     return errorMessages.missingPasswordConfirm || 'Repita sua senha.';
   }

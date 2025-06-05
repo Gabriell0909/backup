@@ -18,6 +18,7 @@ import Icons from '../../constants/icons';
 
 import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/AuthRules/cadastro/Rules.js';
 import { CadastrarUsuario } from '../../Auth/AuthCadastro.js';
+import CustomAlert from '../../components/modal.jsx';
 
 export default function Cadastro({ navigation }) {
    const [hidden, setHidden] = useState(true);
@@ -31,16 +32,34 @@ export default function Cadastro({ navigation }) {
    const [erroSenha, setErroSenha] = useState(false);
    const [erroSenhaConfirmada, seterroSenhaConfirmada] = useState(false);
 
+   const [alertMessage, setAlertMessage] = useState('');
+   const [alertVisible, setAlertVisible] = useState(false);
+
+   const onBlurEmail = () => {
+      const erroEmail = validarEmail(email);
+      setErroEmail(!!erroEmail);
+   };
+   const onBlurSenha = () => {
+      const erroSenha = validarSenha(senha);
+      setErroSenha(!!erroSenha);
+   };
+   const onBlurSenhaConfirmada = () => {
+      const erroSenhaConfirmada = validarSenhaConfirmada(senha, senhaConfirmada);
+      seterroSenhaConfirmada(!!erroSenhaConfirmada);
+   };
+
    const HandleCadastro = async () => {
       const emailErro = validarEmail(email);
       const senhaErro = validarSenha(senha);
       const senhaConfirmadaErro = validarSenhaConfirmada(senha, senhaConfirmada);
 
-      setErroEmail(emailErro);
-      setErroSenha(senhaErro);
-      seterroSenhaConfirmada(senhaConfirmadaErro);
+      setErroEmail(!!emailErro);
+      setErroSenha(!!senhaErro);
+      seterroSenhaConfirmada(!!senhaConfirmadaErro);
 
       if (emailErro || senhaErro || senhaConfirmadaErro) {
+         setAlertVisible(true);
+         setAlertMessage(emailErro || senhaErro || senhaConfirmadaErro);
          return;
       }
 
@@ -48,7 +67,17 @@ export default function Cadastro({ navigation }) {
          await CadastrarUsuario(email, senha);
       } catch (error) {
          console.log('Erro ao cadastrar', error);
-         Alert.alert('Erro', 'Não foi possível cadastrar o usuário.');
+         if (error.code === 'auth/email-already-in-use') {
+            setAlertMessage(errorMessages.emailAlreadyInUse || 'E-mail já cadastrado.');
+         } else if (error.code === 'auth/invalid-email') {
+            setAlertMessage(errorMessages.invalidEmail || 'E-mail inválido.');
+         } else if (error.code === 'auth/weak-password') {
+            setAlertMessage(errorMessages.weakPassword || 'Senha fraca.');
+         } else {
+            setAlertMessage(error.message || 'Erro ao cadastrar usuário.');
+         }
+         setAlertVisible(true);
+         setAlertVisible(true);
       }
    };
 
@@ -65,33 +94,36 @@ export default function Cadastro({ navigation }) {
                <Icons.SecureLogin width={350} height={350} />
 
                <Text style={styles.titulo}>Cadastro</Text>
-
+               <CustomAlert
+                  visible={alertVisible}
+                  onClose={() => setAlertVisible(false)}
+                  message={alertMessage}
+               />
                <View style={styles.group}>
-             
                   <InputAuth
-                     placeholder="Exemplo123@gmail.com"
+                     placeholder={erroEmail ? validarEmail(email) : 'Exemplo123@gmail.com'}
                      maxLength={40}
                      onChangeText={(text) => {
                         setEmail(text);
-                        setErroEmail('');
+                        setErroEmail(false);
                      }}
+                     onBlur={onBlurEmail}
                      value={email}
-                     erro={!!erroEmail}
+                     erro={erroEmail}
                   >
                      <Ionicons name="mail-outline" size={24} />
                   </InputAuth>
 
-                  {erroEmail ? <Text style={styles.errorText}>{erroEmail}</Text> : null}
-
                   <InputAuth
-                     placeholder="Digite sua senha"
+                     placeholder={erroSenha ? validarSenha(senha) : 'Digite sua senha'}
                      maxLength={8}
                      secureTextEntry={hidden}
                      onChangeText={(text) => {
                         setSenha(text);
-                        setErroSenha('');
+                        setErroSenha(false);
                      }}
                      value={senha}
+                     onBlur={onBlurSenha}
                      rightIcon={
                         <Ionicons
                            name={hidden ? 'eye-off-outline' : 'eye-outline'}
@@ -102,22 +134,23 @@ export default function Cadastro({ navigation }) {
                            }}
                         />
                      }
-                     erro={!!erroSenha}
+                     erro={erroSenha}
                   >
                      <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
                   </InputAuth>
 
-                  {erroSenha ? <Text style={styles.errorText}>{erroSenha}</Text> : null}
-
                   <InputAuth
-                     placeholder="Repita sua senha"
+                     placeholder={
+                        erroSenhaConfirmada ? validarSenhaConfirmada(senhaConfirmada) : 'Repita sua senha'
+                     }
                      maxLength={8}
                      secureTextEntry={hiddenConfirmation}
                      onChangeText={(text) => {
                         setSenhaConfirmada(text);
-                        seterroSenhaConfirmada('');
+                        seterroSenhaConfirmada(false);
                      }}
                      value={senhaConfirmada}
+                     onBlur={onBlurSenhaConfirmada}
                      rightIcon={
                         <Ionicons
                            name={hiddenConfirmation ? 'eye-off-outline' : 'eye-outline'}
@@ -127,12 +160,10 @@ export default function Cadastro({ navigation }) {
                            }}
                         />
                      }
-                     erro={!!erroSenhaConfirmada}
+                     erro={erroSenhaConfirmada}
                   >
                      <Ionicons name="lock-closed-outline" size={24} />
                   </InputAuth>
-
-                  {erroSenhaConfirmada ? <Text style={styles.errorText}>{erroSenhaConfirmada}</Text> : null}
 
                   <TouchableOpacity style={styles.button} onPress={HandleCadastro}>
                      <Text>Cadastrar</Text>

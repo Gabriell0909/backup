@@ -1,6 +1,9 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ImageBackground, Image, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
 import { styles } from './Home.style';
 import Card from '../../components/card';
 import Input from '../../components/inputs';
@@ -8,8 +11,6 @@ import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
 import BottomSheetCustom from '../../components/bottomSheet';
 import Icons from '../../constants/icons';
-import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function Home({ navigation }) {
    useFocusEffect(
@@ -22,12 +23,15 @@ export default function Home({ navigation }) {
    const imagemPerfil = '';
    const [PerfilImage, setperfilImage] = useState({ uri: imagemPerfil });
 
-   const imagemCapa = 'https://cdn-1.motorsport.com/images/amp/YKEZbVX0/s1000/ferrari-499p-1.jpg';
+   const imagemCapa = '';
+
    const [backgroundImage, setBackgroundImage] = useState({ uri: imagemCapa });
-   
+
    const imagemValida = backgroundImage?.uri?.length > 0;
 
    const sheetRef = useRef(null);
+   const bannerDefault = require('../../assets/img/banner.png');
+   
    return (
       <SafeAreaProvider>
          <SafeAreaView style={{ flex: 1 }}>
@@ -44,30 +48,34 @@ export default function Home({ navigation }) {
                      />
                   </ImageBackground>
                ) : (
-                  <View style={styles.CardNoImage}>
-                     <View style={styles.circle}></View>
-                  </View>
+                  <ImageBackground source={bannerDefault} style={styles.cardImage} resizeMode="cover">
+                     <Image
+                        source={imagemPerfil ? { uri: imagemPerfil } : Icons.DefaultAvatar}
+                        style={styles.circle}
+                     />
+                  </ImageBackground>
                )}
 
                <Card>
-                  <View style={styles.sectionBalance}>
-                     <Text style={styles.text}>Saldo geral</Text>
-                     <Text style={styles.text}>R$ 0,00</Text>
-                     <Divider />
-                     <Text style={styles.text}>Minhas Contas</Text>
-                  </View>
+                 
+                     <View style={styles.sectionBalance}>
+                        <Text style={styles.text}>Saldo geral</Text>
+                        <Text style={styles.text}>R$ 0,00</Text>
+                        <Divider />
+                        <Text style={styles.text}>Minhas Contas</Text>
+                     </View>
 
-                  <View style={styles.sectionButton}>
-                     <ButtonS
-                        style={styles.button}
-                        activeOpacity={0.8}
-                        onPress={() => {
-                           sheetRef.current?.snapToIndex(1);
-                        }}
-                     >
-                        <Text> ADICIONAR</Text>
-                     </ButtonS>
-                  </View>
+                     <View style={styles.sectionButton}>
+                        <ButtonS
+                           style={styles.button}
+                           activeOpacity={0.8}
+                           onPress={() => {
+                              sheetRef.current?.snapToIndex(1);
+                           }}
+                        >
+                           <Text> ADICIONAR</Text>
+                        </ButtonS>
+                     </View>
                </Card>
 
                <Card>
@@ -86,7 +94,12 @@ export default function Home({ navigation }) {
                      </View>
 
                      <View style={styles.cardOptions}>
-                        <ButtonS style={styles.cardActionButton} onPress={() =>{ navigation.navigate('CategoriasScreen')}}>
+                        <ButtonS
+                           style={styles.cardActionButton}
+                           onPress={() => {
+                              navigation.navigate('CategoriasScreen');
+                           }}
+                        >
                            <Ionicons name="layers-outline" size={42} />
                         </ButtonS>
                         <Text style={styles.text}>Categorias</Text>
@@ -103,12 +116,13 @@ export default function Home({ navigation }) {
             </View>
 
             <BottomSheetCustom sheetRef={sheetRef}>
-               <Input />
-               <Input />
+               <Input placeholder='Nome' />
+               <Input placeholder='R$ 0,00'/>
                <ButtonS>
                   <Text> Salvar </Text>
                </ButtonS>
             </BottomSheetCustom>
+
          </SafeAreaView>
       </SafeAreaProvider>
    );

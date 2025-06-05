@@ -16,7 +16,8 @@ import Category from "../assets/svg/category_24dp.svg"
 import FaceIcon from "../assets/svg/face_4_24dp.svg"
 import ChartIcon from "../assets/svg/Icone de Grafico.svg"
 
-import DefaultAvatar from "../assets/svg/DefaultAvatar.png"
+import DefaultAvatar from "../assets/img/avatar.png"
+import Default from '../assets/img/default.png'
 
 export default {
     chart,
@@ -34,5 +35,6 @@ export default {
     FaceIcon,
     ChartIcon,
     DefaultAvatar,
+    Default,
 };
 
