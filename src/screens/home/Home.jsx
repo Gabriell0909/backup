@@ -6,11 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { styles } from './Home.style';
 import Card from '../../components/card';
+import CardAction from './components/cardAction.jsx';
 import Input from '../../components/inputs';
 import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
 import BottomSheetCustom from '../../components/bottomSheet';
 import Icons from '../../constants/icons';
+import Wallet from './components/wallet';
+import WalletDetail from './components/walletDetail';
 
 export default function Home({ navigation }) {
    useFocusEffect(
@@ -31,7 +34,7 @@ export default function Home({ navigation }) {
 
    const sheetRef = useRef(null);
    const bannerDefault = require('../../assets/img/banner.png');
-   
+
    return (
       <SafeAreaProvider>
          <SafeAreaView style={{ flex: 1 }}>
@@ -56,8 +59,11 @@ export default function Home({ navigation }) {
                   </ImageBackground>
                )}
 
-               <Card>
-                 
+               <View style={styles.wallet}>
+                     <Wallet>
+                        <WalletDetail />
+                     </Wallet>
+                  <Card>
                      <View style={styles.sectionBalance}>
                         <Text style={styles.text}>Saldo geral</Text>
                         <Text style={styles.text}>R$ 0,00</Text>
@@ -76,9 +82,10 @@ export default function Home({ navigation }) {
                            <Text> ADICIONAR</Text>
                         </ButtonS>
                      </View>
-               </Card>
+                  </Card>
+               </View>
 
-               <Card>
+               <CardAction>
                   <View style={styles.containerActions}>
                      <View style={styles.cardOptions}>
                         <ButtonS
@@ -112,17 +119,16 @@ export default function Home({ navigation }) {
                         <Text style={styles.text}>Gráfico</Text>
                      </View>
                   </View>
-               </Card>
+               </CardAction>
             </View>
 
             <BottomSheetCustom sheetRef={sheetRef}>
-               <Input placeholder='Nome' />
-               <Input placeholder='R$ 0,00'/>
+               <Input placeholder="Nome" />
+               <Input placeholder="R$ 0,00" />
                <ButtonS>
                   <Text> Salvar </Text>
                </ButtonS>
             </BottomSheetCustom>
-
          </SafeAreaView>
       </SafeAreaProvider>
    );

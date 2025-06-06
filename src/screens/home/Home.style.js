@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
    container: {
       flex: 1,
-      alignItems: 'center',
+      // alignItems: 'center',
       marginHorizontal: 15,
    },
 
@@ -78,4 +78,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       gap: 30,
    },
+   wallet:{
+      width:'100%',
+   }
 });
