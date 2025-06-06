@@ -88,7 +88,7 @@ export default function Cadastro({ navigation }) {
          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
          <StatusBar translucent backgroundColor="transparent" />
-         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
             <View style={styles.container}>
                <SemiCirculo />
                <Icons.SecureLogin width={350} height={350} />

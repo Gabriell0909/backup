@@ -58,6 +58,7 @@ export default function Login({ navigation }) {
       try {
          await FazerLogin(email, senha);
       } catch (error) {
+         console.error('[handleLogin] Erro no login:', error);
          if (
             error.code === 'auth/invalid-credential' ||
             error.code === 'auth/wrong-password' ||
@@ -70,8 +71,8 @@ export default function Login({ navigation }) {
          if (error.code === 'auth/too-many-requests') {
             setAlertMessage(errorMessages.tooManyRequests);
          }
-         if(error.code === 'auth/email-already-in-use'){
-            setAlertMessage(errorMessages.emailAlreadyInUse)
+         if (error.code === 'auth/email-already-in-use') {
+            setAlertMessage(errorMessages.emailAlreadyInUse);
          }
          setAlertVisible(true);
       }
@@ -84,7 +85,7 @@ export default function Login({ navigation }) {
          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
          <StatusBar translucent backgroundColor="transparent" />
-         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
             <View style={{ flex: 1, alignItems: 'center' }}>
                <SemiCirculo />
                <Icons.SecureLoginAmico width={360} height={360} />
