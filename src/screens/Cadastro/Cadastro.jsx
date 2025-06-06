@@ -110,6 +110,8 @@ export default function Cadastro({ navigation }) {
                      onBlur={onBlurEmail}
                      value={email}
                      erro={erroEmail}
+                     editable={true}
+                     pointerEvents="auto"
                   >
                      <Ionicons name="mail-outline" size={24} />
                   </InputAuth>
@@ -124,6 +126,8 @@ export default function Cadastro({ navigation }) {
                      }}
                      value={senha}
                      onBlur={onBlurSenha}
+                     editable={true}
+                     pointerEvents="auto"
                      rightIcon={
                         <Ionicons
                            name={hidden ? 'eye-off-outline' : 'eye-outline'}
@@ -151,6 +155,8 @@ export default function Cadastro({ navigation }) {
                      }}
                      value={senhaConfirmada}
                      onBlur={onBlurSenhaConfirmada}
+                     editable={true}
+                     pointerEvents="auto"
                      rightIcon={
                         <Ionicons
                            name={hiddenConfirmation ? 'eye-off-outline' : 'eye-outline'}

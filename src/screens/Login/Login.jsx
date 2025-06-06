@@ -107,6 +107,8 @@ export default function Login({ navigation }) {
                         setErroEmail(false);
                      }}
                      onBlur={onBlurEmail}
+                     editable={true}
+                     pointerEvents="auto"
                   >
                      <Ionicons name="mail-outline" size={24} color={'#000'} />
                   </InputAuth>
@@ -122,6 +124,8 @@ export default function Login({ navigation }) {
                         setErroSenha(false);
                      }}
                      onBlur={onBlurSenha}
+                     editable={true}
+                     pointerEvents="auto"
                      rightIcon={
                         <Ionicons
                            name={hidden ? 'eye-off-outline' : 'eye-outline'}
