@@ -16,9 +16,16 @@ export default {
          resizeMode: 'contain',
          backgroundColor: '#ffffff',
       },
+      updates: {
+         url: 'https://u.expo.dev/fdcf3d9d-b03e-4304-9a8e-6052743771ae',
+      },
+
       ios: {
          bundleID: 'com.economiza.app',
          supportsTablet: true,
+         runtimeVersion: {
+            policy: 'appVersion',
+         },
       },
       android: {
          package: 'com.economiza.app',
@@ -26,6 +33,7 @@ export default {
             foregroundImage: './assets/adaptive-icon.png',
             backgroundColor: '#ffffff',
          },
+         runtimeVersion: '1.0.0',
       },
       web: {
          favicon: './assets/favicon.png',

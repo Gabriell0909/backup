@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
    const [email, setEmail] = useState('');
    const [senha, setSenha] = useState('');
 
-   const [erroEmail, setErroEmail] = useState(email);
+   const [erroEmail, setErroEmail] = useState(false);
    const [erroSenha, setErroSenha] = useState(false);
 
    const [alertVisible, setAlertVisible] = useState(false);
@@ -109,6 +109,7 @@ export default function Login({ navigation }) {
                      onBlur={onBlurEmail}
                      editable={true}
                      pointerEvents="auto"
+                     value={email}
                   >
                      <Ionicons name="mail-outline" size={24} color={'#000'} />
                   </InputAuth>

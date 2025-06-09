@@ -9,7 +9,7 @@ import {
    StatusBar,
 } from 'react-native';
 
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import SemiCirculo from '../../components/semicirculo';
 import { styles } from './Cadastro.style.js';
@@ -20,7 +20,10 @@ import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/
 import { CadastrarUsuario } from '../../Auth/AuthCadastro.js';
 import CustomAlert from '../../components/modal.jsx';
 
-export default function Cadastro({ navigation }) {
+import ErrorBoundary from '../../components/errorBoundary.jsx'
+
+
+export default function Cadastro() {
    const [hidden, setHidden] = useState(true);
    const [hiddenConfirmation, setHiddenConfirmation] = useState(true);
 
@@ -82,101 +85,105 @@ export default function Cadastro({ navigation }) {
    };
 
    return (
-      <KeyboardAvoidingView
-         style={{ flex: 1 }}
-         behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      >
-         <StatusBar translucent backgroundColor="transparent" />
-         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
-            <View style={styles.container}>
-               <SemiCirculo />
-               <Icons.SecureLogin width={350} height={350} />
+      <ErrorBoundary>
+         <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+         >
+            <StatusBar translucent backgroundColor="transparent" />
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
+               <View style={styles.container}>
+                  <SemiCirculo />
+                  <Icons.SecureLogin width={350} height={350} />
 
-               <Text style={styles.titulo}>Cadastro</Text>
-               <CustomAlert
-                  visible={alertVisible}
-                  onClose={() => setAlertVisible(false)}
-                  message={alertMessage}
-               />
-               <View style={styles.group}>
-                  <InputAuth
-                     placeholder={erroEmail ? validarEmail(email) : 'Exemplo123@gmail.com'}
-                     maxLength={40}
-                     onChangeText={(text) => {
-                        setEmail(text);
-                        setErroEmail(false);
-                     }}
-                     onBlur={onBlurEmail}
-                     value={email}
-                     erro={erroEmail}
-                     editable={true}
-                     pointerEvents="auto"
-                  >
-                     <Ionicons name="mail-outline" size={24} />
-                  </InputAuth>
+                  <Text style={styles.titulo}>Cadastro</Text>
+                  <CustomAlert
+                     visible={alertVisible}
+                     onClose={() => setAlertVisible(false)}
+                     message={alertMessage}
+                  />
+                  <View style={styles.group}>
+                     <InputAuth
+                        placeholder={erroEmail ? validarEmail(email) : 'Exemplo123@gmail.com'}
+                        maxLength={40}
+                        onChangeText={(text) => {
+                           setEmail(text);
+                           setErroEmail(false);
+                        }}
+                        onBlur={onBlurEmail}
+                        value={email}
+                        erro={erroEmail}
+                        editable={true}
+                        pointerEvents="auto"
+                     >
+                        <Ionicons name="mail-outline" size={24} />
+                     </InputAuth>
 
-                  <InputAuth
-                     placeholder={erroSenha ? validarSenha(senha) : 'Digite sua senha'}
-                     maxLength={8}
-                     secureTextEntry={hidden}
-                     onChangeText={(text) => {
-                        setSenha(text);
-                        setErroSenha(false);
-                     }}
-                     value={senha}
-                     onBlur={onBlurSenha}
-                     editable={true}
-                     pointerEvents="auto"
-                     rightIcon={
-                        <Ionicons
-                           name={hidden ? 'eye-off-outline' : 'eye-outline'}
-                           size={24}
-                           color={'#000'}
-                           onPress={() => {
-                              setHidden(!hidden);
-                           }}
-                        />
-                     }
-                     erro={erroSenha}
-                  >
-                     <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
-                  </InputAuth>
+                     <InputAuth
+                        placeholder={erroSenha ? validarSenha(senha) : 'Digite sua senha'}
+                        maxLength={8}
+                        secureTextEntry={hidden}
+                        onChangeText={(text) => {
+                           setSenha(text);
+                           setErroSenha(false);
+                        }}
+                        value={senha}
+                        onBlur={onBlurSenha}
+                        editable={true}
+                        pointerEvents="auto"
+                        rightIcon={
+                           <Ionicons
+                              name={hidden ? 'eye-off-outline' : 'eye-outline'}
+                              size={24}
+                              color={'#000'}
+                              onPress={() => {
+                                 setHidden(!hidden);
+                              }}
+                           />
+                        }
+                        erro={erroSenha}
+                     >
+                        <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
+                     </InputAuth>
 
-                  <InputAuth
-                     placeholder={
-                        erroSenhaConfirmada ? validarSenhaConfirmada(senhaConfirmada) : 'Repita sua senha'
-                     }
-                     maxLength={8}
-                     secureTextEntry={hiddenConfirmation}
-                     onChangeText={(text) => {
-                        setSenhaConfirmada(text);
-                        seterroSenhaConfirmada(false);
-                     }}
-                     value={senhaConfirmada}
-                     onBlur={onBlurSenhaConfirmada}
-                     editable={true}
-                     pointerEvents="auto"
-                     rightIcon={
-                        <Ionicons
-                           name={hiddenConfirmation ? 'eye-off-outline' : 'eye-outline'}
-                           size={24}
-                           onPress={() => {
-                              setHiddenConfirmation(!hiddenConfirmation);
-                           }}
-                        />
-                     }
-                     erro={erroSenhaConfirmada}
-                  >
-                     <Ionicons name="lock-closed-outline" size={24} />
-                  </InputAuth>
+                     <InputAuth
+                        placeholder={
+                           erroSenhaConfirmada
+                              ? validarSenhaConfirmada(senha, senhaConfirmada)
+                              : 'Repita sua senha'
+                        }
+                        maxLength={8}
+                        secureTextEntry={hiddenConfirmation}
+                        onChangeText={(text) => {
+                           setSenhaConfirmada(text);
+                           seterroSenhaConfirmada(false);
+                        }}
+                        value={senhaConfirmada}
+                        onBlur={onBlurSenhaConfirmada}
+                        editable={true}
+                        pointerEvents="auto"
+                        rightIcon={
+                           <Ionicons
+                              name={hiddenConfirmation ? 'eye-off-outline' : 'eye-outline'}
+                              size={24}
+                              onPress={() => {
+                                 setHiddenConfirmation(!hiddenConfirmation);
+                              }}
+                           />
+                        }
+                        erro={erroSenhaConfirmada}
+                     >
+                        <Ionicons name="lock-closed-outline" size={24} />
+                     </InputAuth>
 
-                  <TouchableOpacity style={styles.button} onPress={HandleCadastro}>
-                     <Text>Cadastrar</Text>
-                  </TouchableOpacity>
+                     <TouchableOpacity style={styles.button} onPress={HandleCadastro}>
+                        <Text>Cadastrar</Text>
+                     </TouchableOpacity>
+                  </View>
                </View>
-            </View>
-         </ScrollView>
-      </KeyboardAvoidingView>
+            </ScrollView>
+         </KeyboardAvoidingView>
+      </ErrorBoundary>
    );
 }

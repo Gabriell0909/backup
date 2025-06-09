@@ -4,7 +4,7 @@ function InputAuth({ value, erro, style, children, rightIcon, ...props }) {
    return (
       <View style={[styles.container, erro && styles.containerErro, style]}>
          {children}
-         <TextInput value={value} style={styles.input} {...props} />
+         <TextInput value={value ?? ''} style={styles.input} {...props} />
          {rightIcon}
       </View>
    );
