@@ -36,3 +36,17 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Arquivos de Build do Android
+/android/app/build/
+/android/.gradle/
+*.apk
+*.aab
+
+# Arquivos de Keystore (Chave de Assinatura)
+*.jks
+*.keystore
+
+# Arquivos de configuração local
+/android/local.properties
+

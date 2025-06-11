@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -12,7 +13,6 @@ import {
    MEASUREMENT_ID,
 } from '@env';
 
-
 const firebaseConfig = {
    apiKey: API_KEY,
    authDomain: AUTH_DOMAIN,
@@ -23,13 +23,26 @@ const firebaseConfig = {
    measurementId: MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
+// Inicializa o app apenas se não houver nenhuma instância existente
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
+// Inicializa o auth apenas se não houver nenhuma instância existente
+let auth;
+try {
+    auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+    });
+    console.log('✅ Firebase Auth conectado com sucesso!');
+} catch (error) {
+    if (error.code === 'auth/already-initialized') {
+        console.log('⚠️ Firebase Auth já estava inicializado');
+    } else {
+        console.error('❌ Erro ao inicializar Firebase Auth:', error);
+    }
+}
 
-console.log('✅ Firebase conectado com sucesso!');
+// Inicializa o Firestore
+const db = getFirestore(app);
+console.log('✅ Firebase Firestore conectado com sucesso!');
 
-export { app, auth };
+export { app, auth, db };

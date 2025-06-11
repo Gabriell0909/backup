@@ -4,13 +4,11 @@ import Routes from './src/Navigation/index';
 import LoadScreen from './src/screens/Splash/Splash'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-
 import { useAuth } from './src/Hooks/useAuth'; 
 
+
 export default function App() {
-
    const {user, initializing} = useAuth()
-
 
    if(initializing){
       return <LoadScreen/>

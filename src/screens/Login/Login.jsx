@@ -1,168 +1,192 @@
 import {
-   View,
-   Text,
-   Pressable,
-   TouchableOpacity,
-   KeyboardAvoidingView,
-   ScrollView,
-   Platform,
-   StatusBar,
-   Modal,
+    View,
+    Text,
+    Pressable,
+    TouchableOpacity,
+    KeyboardAvoidingView,
+    ScrollView,
+    Platform,
+    StatusBar,
+    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 import { styles } from './Login.style';
 import { FazerLogin } from '../../Auth/AuthLogin';
+import { ErrorBoundary } from '../../components/ErrorBoundary.jsx';
+import { errorMessages } from '../../Utils/AuthRules/ErrosMenssages';
+import { validarEmail, validarSenha } from '../../Utils/AuthRules/login/loginRules';
+
 import SemiCirculo from '../../components/semicirculo';
 import Icons from '../../constants/icons';
 import InputAuth from '../../components/InputAuth/inputsAuth';
-import { validarEmail, validarSenha } from '../../Utils/AuthRules/login/loginRules';
-import { errorMessages } from '../../Utils/AuthRules/ErrosMenssages';
 import CustomAlert from '../../components/modal';
 
 export default function Login({ navigation }) {
-   const [hidden, setHidden] = useState(true);
+    const [hidden, setHidden] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-   const [email, setEmail] = useState('');
-   const [senha, setSenha] = useState('');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
 
-   const [erroEmail, setErroEmail] = useState(false);
-   const [erroSenha, setErroSenha] = useState(false);
+    const [erroEmail, setErroEmail] = useState(false);
+    const [erroSenha, setErroSenha] = useState(false);
 
-   const [alertVisible, setAlertVisible] = useState(false);
-   const [alertMessage, setAlertMessage] = useState('');
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    
 
-   const onBlurEmail = () => {
-      const erroEmail = validarEmail(email);
-      setErroEmail(!!erroEmail);
-   };
-   const onBlurSenha = () => {
-      const erroSenha = validarSenha(senha);
-      setErroSenha(!!erroSenha);
-   };
+    const onBlurEmail = useCallback(() => {
+        const erroMsg = validarEmail(email);
+        setErroEmail(!!erroMsg);
+    }, [email]);
+    const onBlurSenha = useCallback(() => {
+        const erroMsg = validarSenha(senha);
+        setErroSenha(!!erroMsg);
+    }, [senha]);
 
-   const handleLogin = async () => {
-      const erroSenha = validarSenha(senha);
-      const erroEmail = validarEmail(email);
+    const handleLogin = async () => {
+        const erroMsgEmail = validarEmail(email);
+        const erroMsgSenha = validarSenha(senha);
 
-      setErroSenha(!!erroSenha);
-      setErroEmail(!!erroEmail);
+        setErroEmail(!!erroMsgEmail);
+        setErroSenha(!!erroMsgSenha);
 
-      if (erroEmail || erroSenha) {
-         setAlertMessage(erroEmail || erroSenha);
-         setAlertVisible(true);
-         return;
-      }
+        if (erroMsgEmail || erroMsgSenha) {
+            setAlertMessage(erroMsgEmail || erroMsgSenha);
+            setAlertVisible(true);
+            return;
+        }
 
-      try {
-         await FazerLogin(email, senha);
-      } catch (error) {
-         console.error('[handleLogin] Erro no login:', error);
-         if (
-            error.code === 'auth/invalid-credential' ||
-            error.code === 'auth/wrong-password' ||
-            error.code === 'auth/user-not-found'
-         ) {
-            setAlertMessage(errorMessages.invalidCredential);
-         } else {
-            setAlertMessage(error.message || 'erro ao fazer login');
-         }
-         if (error.code === 'auth/too-many-requests') {
-            setAlertMessage(errorMessages.tooManyRequests);
-         }
-         if (error.code === 'auth/email-already-in-use') {
-            setAlertMessage(errorMessages.emailAlreadyInUse);
-         }
-         setAlertVisible(true);
-      }
-   };
+        try {
+            setLoading(true);
+            await FazerLogin(email, senha);
+        } catch (error) {
+            console.error('[handleLogin] Erro no login:', error);
+            if (
+                error.code === 'auth/invalid-credential' ||
+                error.code === 'auth/wrong-password' ||
+                error.code === 'auth/user-not-found'
+            ) {
+                setAlertMessage(errorMessages.invalidCredential);
+            } else if (error.code === 'auth/too-many-requests') {
+                setAlertMessage(errorMessages.tooManyRequests);
+            } else if (error.code === 'auth/email-already-in-use') {
+                setAlertMessage(errorMessages.emailAlreadyInUse);
+            } else {
+                setAlertMessage(error.message || 'Erro ao fazer login');
+            }
+            setAlertVisible(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-   return (
-      <KeyboardAvoidingView
-         style={{ flex: 1 }}
-         behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      >
-         <StatusBar translucent backgroundColor="transparent" />
-         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
-            <View style={{ flex: 1, alignItems: 'center' }}>
-               <SemiCirculo />
-               <Icons.SecureLoginAmico width={360} height={360} />
-               <Text style={styles.titulo}>Login</Text>
+    return (
+        <ErrorBoundary>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            >
+                <StatusBar translucent backgroundColor="transparent" />
+                <ScrollView 
+                    contentContainerStyle={{ flexGrow: 1 }} 
+                    keyboardShouldPersistTaps="always"
+                >
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <SemiCirculo/>
+                        <Icons.SecureLoginAmico width={360} height={360} />
+                        <Text style={styles.titulo}>Login</Text>
 
-               <CustomAlert
-                  visible={alertVisible}
-                  message={alertMessage}
-                  onClose={() => setAlertVisible(false)}
-               />
-               <View style={styles.container}>
-                  <InputAuth
-                     erro={erroEmail}
-                     placeholder={erroEmail ? validarEmail(email) : 'Exemplo123@gmail.com'}
-                     maxLength={40}
-                     keyboardType="email-address"
-                     onChangeText={(text) => {
-                        setEmail(text);
-                        setErroEmail(false);
-                     }}
-                     onBlur={onBlurEmail}
-                     editable={true}
-                     pointerEvents="auto"
-                     value={email}
-                  >
-                     <Ionicons name="mail-outline" size={24} color={'#000'} />
-                  </InputAuth>
-
-                  <InputAuth
-                     placeholder={erroSenha ? validarSenha(senha) : 'Digite sua senha'}
-                     erro={erroSenha}
-                     maxLength={40}
-                     secureTextEntry={hidden}
-                     value={senha}
-                     onChangeText={(text) => {
-                        setSenha(text);
-                        setErroSenha(false);
-                     }}
-                     onBlur={onBlurSenha}
-                     editable={true}
-                     pointerEvents="auto"
-                     rightIcon={
-                        <Ionicons
-                           name={hidden ? 'eye-off-outline' : 'eye-outline'}
-                           size={24}
-                           color="#000"
-                           onPress={() => {
-                              setHidden(!hidden);
-                           }}
+                        <CustomAlert
+                            visible={alertVisible}
+                            message={alertMessage}
+                            onClose={() => setAlertVisible(false)}
                         />
-                     }
-                  >
-                     <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
-                  </InputAuth>
+                        <View style={styles.container}>
+                            <InputAuth
+                                erro={erroEmail}
+                                placeholder='Exemplo1234@gmail.com'
+                                maxLength={40}
+                                keyboardType="email-address"
+                                onChangeText={(text) => {
+                                    setEmail(text);
+                                    setErroEmail(false);
+                                }}
+                                onBlur={onBlurEmail}
+                                editable={!loading}
+                                pointerEvents={loading ? "none" : "auto"}
+                                value={email}
+                            >
+                                <Ionicons name="mail-outline" size={24} color={'#000'} />
+                            </InputAuth>
 
-                  <Pressable onPress={() => navigation.navigate('AuthRecovery')}>
-                     {({ pressed }) => (
-                        <Text style={[styles.recovery, pressed && { color: '#0077b6' }]}>
-                           Esqueceu a senha?
-                        </Text>
-                     )}
-                  </Pressable>
+                            <InputAuth
+                                placeholder='Digite sua senha'
+                                erro={erroSenha}
+                                maxLength={40}
+                                secureTextEntry={hidden}
+                                value={senha}
+                                onChangeText={(text) => {
+                                    setSenha(text);
+                                    setErroSenha(false);
+                                }}
+                                onBlur={onBlurSenha}
+                                editable={!loading}
+                                pointerEvents={loading ? "none" : "auto"}
+                                rightIcon={
+                                    <Ionicons
+                                        name={hidden ? 'eye-off-outline' : 'eye-outline'}
+                                        size={24}
+                                        color="#000"
+                                        onPress={() => {
+                                            if (!loading) setHidden(!hidden);
+                                        }}
+                                    />
+                                }
+                            >
+                                <Ionicons name="lock-closed-outline" size={24} color={'#000'} />
+                            </InputAuth>
 
-                  <Pressable onPress={() => navigation.navigate('AuthCadastro')}>
-                     {({ pressed }) => (
-                        <Text style={[styles.register, pressed && { color: '#0077b6' }]}>
-                           Não tenho conta
-                        </Text>
-                     )}
-                  </Pressable>
+                            <Pressable 
+                                onPress={() => !loading && navigation.navigate('AuthRecovery')}
+                                disabled={loading}
+                            >
+                                {({ pressed }) => (
+                                    <Text style={[styles.recovery, pressed && { color: '#0077b6' }]}>
+                                        Esqueceu a senha?
+                                    </Text>
+                                )}
+                            </Pressable>
 
-                  <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
-                     <Text>Login</Text>
-                  </TouchableOpacity>
-               </View>
-            </View>
-         </ScrollView>
-      </KeyboardAvoidingView>
-   );
+                            <Pressable 
+                                onPress={() => !loading && navigation.navigate('AuthCadastro')}
+                                disabled={loading}
+                            >
+                                {({ pressed }) => (
+                                    <Text style={[styles.register, pressed && { color: '#0077b6' }]}>
+                                        Não tenho conta
+                                    </Text>
+                                )}
+                            </Pressable>
+
+                            <TouchableOpacity 
+                                style={[styles.button, loading && styles.buttonDisabled]} 
+                                onPress={handleLogin}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color="#000" />
+                                ) : (
+                                    <Text>Login</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </ErrorBoundary>
+    );
 }

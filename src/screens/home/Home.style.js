@@ -3,8 +3,11 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
    container: {
       flex: 1,
-      // alignItems: 'center',
       marginHorizontal: 15,
+   },
+
+   viewIcon:{
+      width:'100%'
    },
 
    CardNoImage: {
@@ -78,7 +81,32 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       gap: 30,
    },
-   wallet:{
-      width:'100%',
-   }
+
+   wallet: {
+      width: '100%',
+   },
+
+   dropdown: {
+      backgroundColor: '#fff',
+      borderColor: '#ccc',
+      marginBottom:10,
+   },
+
+   dropdownBox: {
+      backgroundColor: '#fff',
+      borderColor: '#ccc',
+   },
+
+   placeholder: {
+      color: 'grey',
+   },
+
+   selectIcon:{
+      marginTop:0,
+      alignSelf:'flex-start',
+      width:90,
+   },
+
+
+
 });

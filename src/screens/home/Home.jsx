@@ -1,8 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ImageBackground, Image, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 import { styles } from './Home.style';
 import Card from '../../components/card';
@@ -10,10 +11,12 @@ import CardAction from './components/cardAction.jsx';
 import Input from '../../components/inputs';
 import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
-import BottomSheetCustom from '../../components/bottomSheet';
+import BottomSheetCustomHome from './components/bottomSheetHome.jsx';
 import Icons from '../../constants/icons';
 import Wallet from './components/wallet';
 import WalletDetail from './components/walletDetail';
+
+import { buscarTiposDeConta } from '../../services/tipoContaService';
 
 export default function Home({ navigation }) {
    useFocusEffect(
@@ -22,6 +25,19 @@ export default function Home({ navigation }) {
          return () => StatusBar.setBarStyle('light-content');
       }, []),
    );
+
+  useEffect(() => {
+    const carregarTiposDeConta = async () => {
+      try {
+        const dadosFormatados = await buscarTiposDeConta();
+        setItems(dadosFormatados);
+      } catch (error) {
+        console.error("Erro ao carregar tipos de conta:", error);
+      }
+    };
+
+    carregarTiposDeConta();
+  }, []);
 
    const imagemPerfil = '';
    const [PerfilImage, setperfilImage] = useState({ uri: imagemPerfil });
@@ -34,6 +50,14 @@ export default function Home({ navigation }) {
 
    const sheetRef = useRef(null);
    const bannerDefault = require('../../assets/img/banner.png');
+
+   const [open, setOpen] = useState(false);
+   const [value, setValue] = useState(null);
+   const [items, setItems] = useState([]);
+
+   // Estados para os inputs
+   const [nomeConta, setNomeConta] = useState('');
+   const [valorConta, setValorConta] = useState('');
 
    return (
       <SafeAreaProvider>
@@ -60,9 +84,9 @@ export default function Home({ navigation }) {
                )}
 
                <View style={styles.wallet}>
-                     <Wallet>
-                        <WalletDetail />
-                     </Wallet>
+                  <Wallet>
+                     <WalletDetail />
+                  </Wallet>
                   <Card>
                      <View style={styles.sectionBalance}>
                         <Text style={styles.text}>Saldo geral</Text>
@@ -122,13 +146,46 @@ export default function Home({ navigation }) {
                </CardAction>
             </View>
 
-            <BottomSheetCustom sheetRef={sheetRef}>
-               <Input placeholder="Nome" />
-               <Input placeholder="R$ 0,00" />
+            <BottomSheetCustomHome sheetRef={sheetRef}>
+               <Input 
+                  placeholder="Nome" 
+                  value={nomeConta}
+                  onChangeText={setNomeConta}
+               />
+               <Input 
+                  placeholder="R$ 0,00" 
+                  value={valorConta}
+                  onChangeText={setValorConta}
+                  keyboardType="numeric"
+               />
+
+               <View style={styles.viewIcon}>
+                  <Text>Ícone</Text>
+                  <ButtonS style={styles.selectIcon}>
+                     <Ionicons name="shapes-outline" size={32} />
+                  </ButtonS>
+               </View>
+
+               <View>
+                  <Text>Tipo de conta</Text>
+                  <DropDownPicker
+                     open={open}
+                     value={value}
+                     items={items}
+                     setOpen={setOpen}
+                     setValue={setValue}
+                     setItems={setItems}
+                     placeholder="Escolha uma opção"
+                     style={styles.dropdown}
+                     dropDownContainerStyle={styles.dropdownBox}
+                     placeholderStyle={styles.placeholder}
+                  />
+               </View>
+
                <ButtonS>
                   <Text> Salvar </Text>
                </ButtonS>
-            </BottomSheetCustom>
+            </BottomSheetCustomHome>
          </SafeAreaView>
       </SafeAreaProvider>
    );

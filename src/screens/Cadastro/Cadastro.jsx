@@ -5,12 +5,11 @@ import {
    KeyboardAvoidingView,
    Platform,
    ScrollView,
-   Alert,
    StatusBar,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Passo 1: Importar useEffect
 import SemiCirculo from '../../components/semicirculo';
 import { styles } from './Cadastro.style.js';
 import InputAuth from '../../components/InputAuth/inputsAuth.jsx';
@@ -19,11 +18,11 @@ import Icons from '../../constants/icons';
 import { validarEmail, validarSenha, validarSenhaConfirmada } from '../../Utils/AuthRules/cadastro/Rules.js';
 import { CadastrarUsuario } from '../../Auth/AuthCadastro.js';
 import CustomAlert from '../../components/modal.jsx';
+import { errorMessages } from '../../Utils/AuthRules/ErrosMenssages'; // Importando as mensagens de erro
+import { ErrorBoundary } from '../../components/ErrorBoundary.jsx';
 
-import ErrorBoundary from '../../components/errorBoundary.jsx'
-
-
-export default function Cadastro() {
+export default function Cadastro({ navigation }) {
+   // Adicionei { navigation } caso precise dele no futuro
    const [hidden, setHidden] = useState(true);
    const [hiddenConfirmation, setHiddenConfirmation] = useState(true);
 
@@ -39,16 +38,16 @@ export default function Cadastro() {
    const [alertVisible, setAlertVisible] = useState(false);
 
    const onBlurEmail = () => {
-      const erroEmail = validarEmail(email);
-      setErroEmail(!!erroEmail);
+      const erroMsg = validarEmail(email);
+      setErroEmail(!!erroMsg);
    };
    const onBlurSenha = () => {
-      const erroSenha = validarSenha(senha);
-      setErroSenha(!!erroSenha);
+      const erroMsg = validarSenha(senha);
+      setErroSenha(!!erroMsg);
    };
    const onBlurSenhaConfirmada = () => {
-      const erroSenhaConfirmada = validarSenhaConfirmada(senha, senhaConfirmada);
-      seterroSenhaConfirmada(!!erroSenhaConfirmada);
+      const erroMsg = validarSenhaConfirmada(senha, senhaConfirmada);
+      seterroSenhaConfirmada(!!erroMsg);
    };
 
    const HandleCadastro = async () => {
@@ -68,6 +67,8 @@ export default function Cadastro() {
 
       try {
          await CadastrarUsuario(email, senha);
+         setAlertMessage('Cadastro realizado com sucesso!');
+         setAlertVisible(true);
       } catch (error) {
          console.log('Erro ao cadastrar', error);
          if (error.code === 'auth/email-already-in-use') {
@@ -80,7 +81,6 @@ export default function Cadastro() {
             setAlertMessage(error.message || 'Erro ao cadastrar usuário.');
          }
          setAlertVisible(true);
-         setAlertVisible(true);
       }
    };
 
@@ -88,7 +88,7 @@ export default function Cadastro() {
       <ErrorBoundary>
          <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
          >
             <StatusBar translucent backgroundColor="transparent" />
@@ -105,7 +105,7 @@ export default function Cadastro() {
                   />
                   <View style={styles.group}>
                      <InputAuth
-                        placeholder={erroEmail ? validarEmail(email) : 'Exemplo123@gmail.com'}
+                        placeholder='Exemplo1324@gmail.com'
                         maxLength={40}
                         onChangeText={(text) => {
                            setEmail(text);
@@ -121,7 +121,7 @@ export default function Cadastro() {
                      </InputAuth>
 
                      <InputAuth
-                        placeholder={erroSenha ? validarSenha(senha) : 'Digite sua senha'}
+                        placeholder='digite sua senha'
                         maxLength={8}
                         secureTextEntry={hidden}
                         onChangeText={(text) => {
@@ -148,11 +148,7 @@ export default function Cadastro() {
                      </InputAuth>
 
                      <InputAuth
-                        placeholder={
-                           erroSenhaConfirmada
-                              ? validarSenhaConfirmada(senha, senhaConfirmada)
-                              : 'Repita sua senha'
-                        }
+                        placeholder='Repita sua senha'
                         maxLength={8}
                         secureTextEntry={hiddenConfirmation}
                         onChangeText={(text) => {

@@ -26,6 +26,11 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
    },
 
+   buttonDisabled: {
+      opacity: 0.7,
+      backgroundColor: '#f0f0f0',
+   },
+
    recovery: {
       fontSize: 13,
       textDecorationLine: 'underline',

@@ -1,25 +1,20 @@
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-
 import { auth } from '../Config/FirebaseConfig';
+import { useState, useEffect } from 'react';
 
 export function useAuth() {
-   const [user, setUser] = useState(null);
-   const [initializing, setInitializing] = useState(true);
-   // Estado para saber se o Firebase já verificou a autenticação pela primeira vez
+  const [user, setUser] = useState(null);
+  const [initializing, setInitializing] = useState(true);
 
-   useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-         setUser(currentUser);
+  useEffect(() => {
+    const subscriber = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      if (initializing) {
+        setInitializing(false);
+      }
+    });
 
-         if (initializing) {
-            setInitializing(false);
-         }
-      });
-      return () => {
-         unsubscribe();
-      };
-   },[]);
+    return subscriber;
+  }, []);
 
-   return{user, initializing}
+  return { user, initializing };
 }

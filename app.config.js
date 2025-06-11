@@ -18,6 +18,8 @@ export default {
       },
       updates: {
          url: 'https://u.expo.dev/fdcf3d9d-b03e-4304-9a8e-6052743771ae',
+         enabled: true,
+         fallbackToCacheTimeout: 0,
       },
 
       ios: {
