@@ -6,8 +6,8 @@ export const styles = StyleSheet.create({
       marginHorizontal: 15,
    },
 
-   viewIcon:{
-      width:'100%'
+   viewIcon: {
+      width: '100%',
    },
 
    CardNoImage: {
@@ -46,6 +46,7 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderColor: '#0dd',
       borderWidth: 0,
+      marginTop:10
       //borderColor:'#0dd'
    },
    cardOptions: {
@@ -89,7 +90,7 @@ export const styles = StyleSheet.create({
    dropdown: {
       backgroundColor: '#fff',
       borderColor: '#ccc',
-      marginBottom:10,
+      marginBottom: 10,
    },
 
    dropdownBox: {
@@ -101,12 +102,17 @@ export const styles = StyleSheet.create({
       color: 'grey',
    },
 
-   selectIcon:{
-      marginTop:0,
-      alignSelf:'flex-start',
-      width:90,
+   selectIcon: {
+      marginTop: 0,
+      alignSelf: 'flex-start',
+      width: 90,
    },
 
-
-
+   contaItem: {
+      width:314,
+      height: 60,
+      borderWidth:1,
+      borderColor:'white',
+      borderRadius:5
+   },
 });
