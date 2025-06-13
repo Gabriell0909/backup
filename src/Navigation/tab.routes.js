@@ -10,13 +10,20 @@ const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
    return (
-      <Tab.Navigator screenOptions={{ tabBarShowLabel: false, tabBarStyle: styles.tabStyle }}>
+      <Tab.Navigator
+         screenOptions={{
+            tabBarShowLabel: false,
+            tabBarStyle: styles.tabStyle,
+            tabBarActiveTintColor: '#fff',
+            tabBarInactiveTintColor: '#aaa',
+         }}
+      >
          <Tab.Screen
             name="HomeTab"
             component={Home}
             options={{
                headerShown: false,
-               tabBarHideOnKeyboard:true,
+               tabBarHideOnKeyboard: true,
                tabBarIcon: ({ color, size, focused }) => {
                   if (focused) {
                      return <Ionicons name="home" size={size} color={color} />;
@@ -46,7 +53,7 @@ export default function TabRoutes() {
             component={Despesas}
             options={{
                headerShown: false,
-               tabBarHideOnKeyboard:true,
+               tabBarHideOnKeyboard: true,
 
                tabBarIcon: ({ color, size, focused }) => {
                   if (focused) {

@@ -1,9 +1,14 @@
 import { StyleSheet } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
 
 export const styles = StyleSheet.create({
    container: {
       flex: 1,
       marginHorizontal: 15,
+   },
+
+   containerContent:{
+      // alignItems: 'center',
    },
 
    viewIcon: {
@@ -29,7 +34,15 @@ export const styles = StyleSheet.create({
    },
 
    text: {
+      color: '#000',
+      marginBottom: 5,
+      fontWeight: '300',
+   },
+
+   textWallet: {
       color: '#fff',
+      marginBottom: 5,
+      fontWeight: '300',
    },
 
    sectionBalance: {
@@ -46,7 +59,9 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderColor: '#0dd',
       borderWidth: 0,
-      marginTop:10
+      marginTop: 10,
+      elevation: 4,
+      shadowColor: 'white',
       //borderColor:'#0dd'
    },
    cardOptions: {
@@ -64,6 +79,8 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
       justifyContent: 'center',
       alignItems: 'center',
+      elevation: 8,
+      shadowColor: '#000',
    },
 
    circle: {
@@ -80,11 +97,13 @@ export const styles = StyleSheet.create({
    containerActions: {
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: 30,
+      gap: 40,
+      marginTop: 30,
    },
 
    wallet: {
       width: '100%',
+      borderWidth: 1,
    },
 
    dropdown: {
@@ -109,10 +128,19 @@ export const styles = StyleSheet.create({
    },
 
    contaItem: {
-      width:314,
+      width: 314,
       height: 60,
-      borderWidth:1,
-      borderColor:'white',
-      borderRadius:5
+      borderWidth: 1,
+      borderColor: 'white',
+      borderRadius: 5,
+   },
+
+   currencyInput: {
+      borderWidth: 1,
+      borderColor: '#000',
+      width: '100%',
+      height: 50,
+      borderRadius: 10,
+      paddingStart: 10,
    },
 });

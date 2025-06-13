@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export default function BottomSheetCustomHome({ sheetRef, children }) {
-   const snapPoints = useMemo(() => ['70%','90%'], []);
+   const snapPoints = useMemo(() => ['70%'], []);
 
    const renderBackDrop = useCallback(
       (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,

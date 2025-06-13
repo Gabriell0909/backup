@@ -6,8 +6,8 @@ export default function Card({ children, style, ...props}) {
 
 const styles = StyleSheet.create({
    container: {
-      width: '100%',
-      padding: 20,
+      width: '95%',
+      padding: 10,
       marginTop: 50,
       backgroundColor: '#353535',
       borderRadius: 15,
@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
       flexDirection: 'column',
       justifyContent: 'space-between',
       position:'relative',
+      alignSelf: 'center',
       
    },
 });

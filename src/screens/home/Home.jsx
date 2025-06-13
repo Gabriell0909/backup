@@ -1,32 +1,29 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import {
-   View,
-   Text,
-   ImageBackground,
-   Image,
-   StatusBar,
-   FlatList,
-   TouchableOpacity,
-   Alert,
-} from 'react-native';
+import { View, Text, ImageBackground, Image, StatusBar, FlatList, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
 import DropDownPicker from 'react-native-dropdown-picker';
+import CurrencyInput from 'react-native-currency-input';
 
 import { styles } from './Home.style';
-import Card from '../../components/card';
-import CardAction from './components/cardAction.jsx';
+import Card from './components/wallet/card.jsx';
 import Input from '../../components/inputs';
 import Divider from '../../components/divider';
 import ButtonS from '../../components/customButton';
 import BottomSheetCustomHome from './components/bottomSheetHome.jsx';
 import Icons from '../../constants/icons';
-import Wallet from './components/wallet';
-import WalletDetail from './components/walletDetail';
+
+import Wallet from './components/wallet/wallet.js';
+import WalletDetail from './components/wallet/walletDetail.js';
 
 import { buscarTiposDeConta } from '../../services/tipoContaService';
 import { ContaItem } from './components/listaSaldo/ContaItem.jsx';
+import { cadastrarConta } from '../../services/cadastroDeContas';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../Config/FirebaseConfig';
+import CustomAlert from '../../components/modal.jsx';
 
 export default function Home({ navigation }) {
    useFocusEffect(
@@ -49,6 +46,77 @@ export default function Home({ navigation }) {
       carregarTiposDeConta();
    }, []);
 
+   const [contas, setContas] = useState([]);
+   const [alertVisible, setAlertVisible] = useState(false);
+
+   const buscarContas = async () => {
+      try {
+         const querySnapshot = await getDocs(collection(db, 'conta'));
+         const contasFormatadas = querySnapshot.docs.map((doc) => ({
+            key: doc.id,
+            ...doc.data(),
+         }));
+
+         contasFormatadas.sort((a, b) => a.timestamp - b.timestamp);
+
+         setContas(contasFormatadas);
+      } catch (error) {
+         console.error('Erro ao buscar contas:', error);
+
+         Alert.alert('Erro', 'Não foi possível carregar as contas');
+      }
+   };
+
+   useEffect(() => {
+      buscarContas();
+   }, []);
+
+   const handleCadastrarConta = async () => {
+      if (!nomeConta || !valorConta || !value) {
+         setAlertVisible(true);
+         return;
+      }
+
+      try {
+         const dadosDaConta = {
+            nome: nomeConta,
+            valor: Number(valorConta),
+            icone: null,
+            tipo: value,
+            timestamp: new Date().getTime(),
+         };
+
+         const id = await cadastrarConta(dadosDaConta);
+
+         if (id) {
+            Alert.alert('Sucesso', 'Conta cadastrada com sucesso!');
+            setNomeConta('');
+            setValorConta('');
+            setValue(null);
+            sheetRef.current?.close();
+            buscarContas();
+         }
+      } catch (error) {
+         console.error('Erro ao cadastrar conta:', error);
+         setAlertVisible(true);
+      }
+   };
+
+   const currencyFormatter = new Intl.NumberFormat('pt-br', {
+      style: 'currency',
+      currency: 'BRL',
+   });
+
+   const [saldoTotal, setSaldoTotal] = useState(0);
+   useEffect(() => {
+      if (contas.length === 0) {
+         return setSaldoTotal(0);
+      }
+
+      const total = contas.reduce((soma, conta) => soma + conta.valor, 0);
+      setSaldoTotal(total);
+   }, [contas]);
+
    const imagemPerfil = '';
    const [PerfilImage, setperfilImage] = useState({ uri: imagemPerfil });
 
@@ -67,12 +135,6 @@ export default function Home({ navigation }) {
 
    const [nomeConta, setNomeConta] = useState('');
    const [valorConta, setValorConta] = useState('');
-
-   const [conta, setConta] = useState([
-      { key: '1', nome: 'Inter', tipo: 'corrente', valor: 'R$ 1.000' },
-      { key: '2', nome: 'Itau', tipo: 'corrente', valor: 'R$ 5.000' },
-      { key: '3', nome: 'Nubank', tipo: 'corrente', valor: 'R$ 500' },
-   ]);
 
    return (
       <SafeAreaProvider>
@@ -98,32 +160,35 @@ export default function Home({ navigation }) {
                   </ImageBackground>
                )}
 
-               <View style={styles.wallet}>
+               <View style={styles.containerContent}>
                   <Wallet>
                      <WalletDetail />
                   </Wallet>
                   <Card>
                      <View style={styles.sectionBalance}>
-                        <Text style={styles.text}>Saldo geral</Text>
-                        <Text style={styles.text}>R$ 0,00</Text>
+                        <Text style={styles.textWallet}>Saldo geral</Text>
+                        <Text style={styles.textWallet}>{currencyFormatter.format(saldoTotal)}</Text>
                         <Divider />
-                        <Text style={styles.text}>Minhas Contas</Text>
+                        <Text style={styles.textWallet}>Minhas Contas</Text>
                      </View>
-
                      <FlatList
-                        data={conta}
+                        data={contas}
                         horizontal={true}
                         pagingEnabled
-                        renderItem={({ item }) => (
-                           <ContaItem
-                              nome={item.nome}
-                              tipo={item.tipo}
-                              valor={item.valor}
-                              onPress={() => alert(item.nome)}
-                           />
-                        )}
-                     />
+                        itemSeparatorComponent={() => <View style={{width:8}} />}
+                        renderItem={({ item }) => {
+                           const tipoConta = items.find((tipo) => tipo.value === item.tipo);
 
+                           return (
+                              <ContaItem
+                                 nome={item.nome}
+                                 tipo={tipoConta ? tipoConta.label : item.tipo}
+                                 valor={currencyFormatter.format(item.valor)}
+                                 onPress={() => alert(item.nome)}
+                              />
+                           );
+                        }}
+                     />
                      <View style={styles.sectionButton}>
                         <ButtonS
                            style={styles.button}
@@ -138,50 +203,60 @@ export default function Home({ navigation }) {
                   </Card>
                </View>
 
-               <CardAction>
-                  <View style={styles.containerActions}>
-                     <View style={styles.cardOptions}>
-                        <ButtonS
-                           style={styles.cardActionButton}
-                           onPress={() => {
-                              navigation.navigate('DevedoresScreen');
-                           }}
-                        >
-                           <Ionicons name="person-circle-sharp" size={42} />
-                        </ButtonS>
+               <View style={styles.containerActions}>
+                  <View style={styles.cardOptions}>
+                     <ButtonS
+                        style={styles.cardActionButton}
+                        onPress={() => {
+                           navigation.navigate('DevedoresScreen');
+                        }}
+                     >
+                        <Ionicons name="person-circle-sharp" size={42} />
+                     </ButtonS>
 
-                        <Text style={styles.text}>Devedores</Text>
-                     </View>
-
-                     <View style={styles.cardOptions}>
-                        <ButtonS
-                           style={styles.cardActionButton}
-                           onPress={() => {
-                              navigation.navigate('CategoriasScreen');
-                           }}
-                        >
-                           <Ionicons name="layers-outline" size={42} />
-                        </ButtonS>
-                        <Text style={styles.text}>Categorias</Text>
-                     </View>
-
-                     <View style={styles.cardOptions}>
-                        <ButtonS style={styles.cardActionButton}>
-                           <Ionicons name="pie-chart-outline" size={42} />
-                        </ButtonS>
-                        <Text style={styles.text}>Gráfico</Text>
-                     </View>
+                     <Text style={styles.text}>Devedores</Text>
                   </View>
-               </CardAction>
+
+                  <View style={styles.cardOptions}>
+                     <ButtonS
+                        style={styles.cardActionButton}
+                        onPress={() => {
+                           navigation.navigate('CategoriasScreen');
+                        }}
+                     >
+                        <Ionicons name="layers-outline" size={42} />
+                     </ButtonS>
+                     <Text style={styles.text}>Categorias</Text>
+                  </View>
+
+                  <View style={styles.cardOptions}>
+                     <ButtonS style={styles.cardActionButton}>
+                        <Ionicons name="pie-chart-outline" size={42} />
+                     </ButtonS>
+                     <Text style={styles.text}>Gráfico</Text>
+                  </View>
+               </View>
             </View>
 
             <BottomSheetCustomHome sheetRef={sheetRef}>
+               <CustomAlert
+                  visible={alertVisible}
+                  onClose={() => setAlertVisible(false)}
+                  message="Preencha todos os campos"
+               />
+
                <Input placeholder="Nome" value={nomeConta} onChangeText={setNomeConta} />
-               <Input
+
+               <CurrencyInput
+                  style={styles.currencyInput}
                   placeholder="R$ 0,00"
                   value={valorConta}
-                  onChangeText={setValorConta}
+                  onChangeValue={setValorConta}
                   keyboardType="numeric"
+                  prefix="R$"
+                  delimiter="."
+                  separator=","
+                  precision={2}
                />
 
                <View style={styles.viewIcon}>
@@ -207,7 +282,7 @@ export default function Home({ navigation }) {
                   />
                </View>
 
-               <ButtonS>
+               <ButtonS onPress={handleCadastrarConta}>
                   <Text> Salvar </Text>
                </ButtonS>
             </BottomSheetCustomHome>

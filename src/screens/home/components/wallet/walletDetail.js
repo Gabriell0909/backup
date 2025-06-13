@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-export default function Wallet({ children, style, ...props }) {
+export default function WalletDetail({ children, style, ...props }) {
    return (
       <View style={[styles.container, style]} {...props}>
          {children}
@@ -10,18 +10,17 @@ export default function Wallet({ children, style, ...props }) {
 
 const styles = StyleSheet.create({
    container: {
-      width: '90%',
-      height: '20%',
-      padding: 20,
-      marginStart:3,
-      marginTop: 30,
-      backgroundColor: '#353535',
-      borderRadius: 20,
-      minHeight: 100,
-      maxHeight: 300,
+      width: 288,
+      height: 50,
+      padding: 0,
+      marginStart: 12,
+      marginTop: 10,
+      backgroundColor: 'rgba(108, 108, 108, 0.5)',
+      borderRadius: 18,
       flexDirection: 'column',
       justifyContent: 'space-between',
       position: 'absolute',
-      transform:[{rotate:'-6deg'}],
+      transform: [{ rotate: '2deg' }],
+    
    },
 });

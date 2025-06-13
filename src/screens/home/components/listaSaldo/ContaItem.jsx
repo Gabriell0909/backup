@@ -19,46 +19,48 @@ export const ContaItem = ({ nome, tipo, iconName, valor, onPress }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: 314,
-        height: 60,
-        borderRadius: 8,
-        backgroundColor:'rgba(87, 87, 87, 0.82)',
-        padding:4,
-    },
+   container: {
+      width: 315,
+      height: 60,
+      marginHorizontal:0.7,
+      borderRadius: 8,
+      backgroundColor: 'rgba(87, 87, 87, 0.82)',
+      padding: 4,
+   },
 
-    itensContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    icone: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor:'rgb(226, 226, 226)',
-        marginRight: 15,
-    },
-    infoContainer: {
-        flex: 1,
-    },
-    topRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    nome: {
-        fontSize: 16,
-        fontWeight: '500',
-        color:'white'
-    },
-    valor: {
-        fontSize: 16,
-        fontWeight: '500',
-        color:'white'
-    },
-    tipo: {
-        fontSize: 14,
-        color: 'white',
-    },
+   itensContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      elevation: 8,
+   },
+   icone: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: 'rgb(226, 226, 226)',
+      marginRight: 15,
+   },
+   infoContainer: {
+      flex: 1,
+   },
+   topRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
+   },
+   nome: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: 'white',
+   },
+   valor: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: 'white',
+   },
+   tipo: {
+      fontSize: 14,
+      color: 'white',
+   },
 });

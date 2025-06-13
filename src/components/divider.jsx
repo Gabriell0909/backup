@@ -9,6 +9,5 @@ const styles = StyleSheet.create({
       width: '100%',
       height: 2,
       backgroundColor: '#8E8E8E',
-      marginTop:10,
    },
 });
