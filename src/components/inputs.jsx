@@ -1,7 +1,14 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 
-function Input({ value, erro, style, children, rightIcon, ...props }) {
-   return <TextInput value={value ?? ''} style={[styles.input, erro && styles.inputErro, style]} {...props} />;
+function Input({ value, erro, style, onChangeText, children, rightIcon, ...props }) {
+   return (
+      <TextInput
+         onChangeText={onChangeText}
+         value={value ?? ''}
+         style={[styles.input, erro && styles.inputErro, style]}
+         {...props}
+      />
+   );
 }
 
 const styles = StyleSheet.create({

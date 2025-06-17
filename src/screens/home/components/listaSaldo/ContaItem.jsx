@@ -1,10 +1,13 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { View, Text } from 'react-native';
+import { Dimensions } from 'react-native';
 
-export const ContaItem = ({ nome, tipo, iconName, valor, onPress }) => {
+const largura = Dimensions.get('window').width;
+
+export const ContaItem = ({ nome, tipo, iconName, valor, onPress, onLongPress }) => {
    return (
       <View style={styles.container}>
-         <TouchableOpacity onPress={onPress} style={styles.itensContainer} activeOpacity={0.4}>
+         <TouchableOpacity onPress={onPress} onLongPress={onLongPress} style={styles.itensContainer} activeOpacity={0.4}>
             <View style={styles.icone} />
             <View style={styles.infoContainer}>
                <View style={styles.topRow}>
@@ -20,12 +23,15 @@ export const ContaItem = ({ nome, tipo, iconName, valor, onPress }) => {
 
 const styles = StyleSheet.create({
    container: {
-      width: 315,
+      width: largura * 0.81,
+      // width: 315,
       height: 60,
       marginHorizontal:0.7,
       borderRadius: 8,
       backgroundColor: 'rgba(87, 87, 87, 0.82)',
-      padding: 4,
+      padding: 5,
+      marginStart:3,
+      marginEnd:3,
    },
 
    itensContainer: {

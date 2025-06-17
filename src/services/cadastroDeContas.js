@@ -1,4 +1,4 @@
-import { collection, addDoc, doc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../Config/FirebaseConfig';
 
 export const cadastrarConta = async (conta) => {

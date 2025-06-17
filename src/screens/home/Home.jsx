@@ -2,7 +2,7 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ImageBackground, Image, StatusBar, FlatList, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import CurrencyInput from 'react-native-currency-input';
@@ -175,7 +175,7 @@ export default function Home({ navigation }) {
                         data={contas}
                         horizontal={true}
                         pagingEnabled
-                        itemSeparatorComponent={() => <View style={{width:8}} />}
+                        itemSeparatorComponent={() => <View style={{ width: 8 }} />}
                         renderItem={({ item }) => {
                            const tipoConta = items.find((tipo) => tipo.value === item.tipo);
 
@@ -185,6 +185,7 @@ export default function Home({ navigation }) {
                                  tipo={tipoConta ? tipoConta.label : item.tipo}
                                  valor={currencyFormatter.format(item.valor)}
                                  onPress={() => alert(item.nome)}
+                                 onLongPress={() => {}}
                               />
                            );
                         }}
@@ -211,7 +212,7 @@ export default function Home({ navigation }) {
                            navigation.navigate('DevedoresScreen');
                         }}
                      >
-                        <Ionicons name="person-circle-sharp" size={42} />
+                        <FontAwesome name="user-secret" size={42} />
                      </ButtonS>
 
                      <Text style={styles.text}>Devedores</Text>

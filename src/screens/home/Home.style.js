@@ -55,6 +55,7 @@ export const styles = StyleSheet.create({
    },
 
    button: {
+      width:'50%',
       alignItems: 'center',
       backgroundColor: '#fff',
       borderColor: '#0dd',
