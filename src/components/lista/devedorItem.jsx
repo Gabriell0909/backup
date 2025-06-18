@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ButtonOpacity from '../customButton';
 
 const largura = Dimensions.get('window').width;
-export const ListaItem = ({ nome, iconName, onPress, onLongPress, onDelete, onEdit }) => {
+export const DevedorItem = ({ nome, iconName, onPress, onLongPress, onDelete }) => {
    return (
       <View style={styles.container}>
          <TouchableOpacity
@@ -19,7 +19,7 @@ export const ListaItem = ({ nome, iconName, onPress, onLongPress, onDelete, onEd
                <View style={styles.topRow}>
                   <Text style={styles.nome}>{nome}</Text>
                   <View style={styles.groupButton}>
-                     <ButtonOpacity style={styles.button} onPress={onEdit}>
+                     <ButtonOpacity style={styles.button} onPress={onPress}>
                         <Ionicons name="pencil-outline" size={18} color="black"></Ionicons>
                      </ButtonOpacity>
                      <ButtonOpacity style={styles.button} onPress={onDelete}>

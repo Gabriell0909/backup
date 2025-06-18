@@ -1,7 +1,8 @@
 import { CadastrarCategoria } from "../services/cadastroDeCategorias";
 import { useState } from "react";
+import { Alert } from "react-native";
 
-export const useCategoriaForm = () => {
+export const useCategoriaForm = (onSuccess) => {
    const [nome, setNome] = useState('');
    const handleCadastrarCateg = async () => {
       if (!nome.trim()) {
@@ -18,6 +19,7 @@ export const useCategoriaForm = () => {
 
          if (id) {
             setNome('');
+            if (onSuccess) onSuccess();
          }
       } catch (error) {
          console.log('erro ao cadastar', error);

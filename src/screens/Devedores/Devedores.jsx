@@ -6,10 +6,10 @@ import Card from '../../components/card';
 import Input from '../../components/inputs';
 import ButtonC from '../../components/customButton';
 import { useEffect, useState } from 'react';
-import { CadastrarDevedores } from '../../services/cadastroDeDevedores';
-import { ListaItem } from '../../components/lista/listaItem';
+import { DevedorItem } from '../../components/lista/devedorItem';
 import { buscarDevedores } from '../../services/devedoresService';
 import { useDevedorForm } from '../../Hooks/useFormDevedor';
+import { useDeleteDevedor } from '../../Hooks/useDeleteDevedores';
 
 export default function Devedores() {
    const [items, setItems] = useState([]);
@@ -23,10 +23,31 @@ export default function Devedores() {
       }
    };
    const { nome, setNome, handleCadastrarDevedor } = useDevedorForm(carregarDevedores);
+   const { deletarDevedor } = useDeleteDevedor();
 
    useEffect(() => {
       carregarDevedores();
    }, []);
+
+   const handleDelete = (id) => {
+      Alert.alert('Confirmar exclusão', 'Tem certeza que deseja excluir este devedor?', [
+         { text: 'Cancelar', style: 'cancel' },
+         {
+            text: 'Excluir',
+            style: 'destructive',
+            onPress: async () => {
+               try {
+                  const sucesso = await deletarDevedor(id);
+                  if (sucesso) {
+                     await carregarDevedores();
+                  }
+               } catch (error) {
+                  console.error('Erro ao excluir devedor:', error);
+               }
+            },
+         },
+      ]);
+   };
 
    return (
       <KeyboardAvoidingView
@@ -63,7 +84,7 @@ export default function Devedores() {
                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                data={items}
                renderItem={({ item }) => {
-                  return <ListaItem nome={item.nome} />;
+                  return <DevedorItem nome={item.nome} onDelete={() => handleDelete(item.key)} />;
                }}
             />
          </View>

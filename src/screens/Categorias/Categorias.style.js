@@ -44,4 +44,11 @@ export const styles = StyleSheet.create({
       paddingStart: 19,
       bottom: 30,
    },
+
+   containerLista:{
+      marginTop:40,
+      width:'100%',
+      height:'46%',
+      alignItems:'center'
+   },
 });
