@@ -12,11 +12,10 @@ import { buscarCategorias } from '../../services/categoriaService';
 import { useDeleteCateg } from '../../Hooks/useDeleteCateg';
 
 export default function Categorias() {
+   
    const [itens, setItens] = useState([]);
-
    const carregarCategorias = async () => {
       try {
-         console.log('Iniciando busca de categorias...');
          const dadosFormatados = await buscarCategorias();
          console.log('Dados recebidos:', dadosFormatados);
          setItens(dadosFormatados);

@@ -4,7 +4,7 @@ import { db } from '../Config/FirebaseConfig';
 export const buscarCategorias = async () => {
    try {
       console.log('Conectando ao Firestore...');
-      const categRef = collection(db, 'categorias');
+      const categRef = collection(db, 'categoria');
       console.log('Buscando documentos...');
       const snapShots = await getDocs(categRef);
       console.log('Número de documentos encontrados:', snapShots.size);

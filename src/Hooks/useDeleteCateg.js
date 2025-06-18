@@ -10,7 +10,7 @@ export const useDeleteCateg = () => {
       }
 
       try {
-         const categRef = doc(db, 'categorias', id);
+         const categRef = doc(db, 'categoria', id);
          await deleteDoc(categRef);
          Alert.alert('Sucesso', 'Categoria removido com sucesso');
          return true;
