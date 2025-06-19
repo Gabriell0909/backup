@@ -20,10 +20,10 @@ export const ListaItem = ({ nome, iconName, onPress, onLongPress, onDelete, onEd
                   <Text style={styles.nome}>{nome}</Text>
                   <View style={styles.groupButton}>
                      <ButtonOpacity style={styles.button} onPress={onEdit}>
-                        <Ionicons name="pencil-outline" size={18} color="black"></Ionicons>
+                        <Ionicons name="pencil" size={24} color="black" />
                      </ButtonOpacity>
                      <ButtonOpacity style={styles.button} onPress={onDelete}>
-                        <Ionicons name="trash-outline" size={18} color="black"></Ionicons>
+                        <Ionicons name="trash" size={24} color="black" />
                      </ButtonOpacity>
                   </View>
                </View>

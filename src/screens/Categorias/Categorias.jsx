@@ -1,35 +1,60 @@
+import { useState, useEffect } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, StatusBar, Text, View, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { styles } from './Categorias.style';
-import { useCategoriaForm } from '../../Hooks/useFormCateg';
 import Card from '../../components/card';
 import Input from '../../components/inputs';
 import ButtonC from '../../components/customButton';
 import { ListaItem } from '../../components/lista/listaItem';
-import { useState, useEffect } from 'react';
-import { buscarCategorias } from '../../services/categoriaService';
-import { useDeleteCateg } from '../../Hooks/useDeleteCateg';
+import { buscarCategorias, cadastrarCategoria, editarCategoria, deletarCategoria } from '../../services/categoriaService';
 
 export default function Categorias() {
-   
    const [itens, setItens] = useState([]);
+   const [nome, setNome] = useState('');
+   const [categoriaEditando, setCategoriaEditando] = useState(null);
+
    const carregarCategorias = async () => {
       try {
          const dadosFormatados = await buscarCategorias();
-         console.log('Dados recebidos:', dadosFormatados);
          setItens(dadosFormatados);
       } catch (error) {
          console.error('Erro ao buscar categorias:', error);
-         Alert.alert(
-            'Erro',
-            'Não foi possível carregar as categorias. Por favor, tente novamente.'
-         );
+         Alert.alert('Erro', 'Não foi possível carregar as categorias. Tente novamente.');
       }
    };
 
-   const { nome, setNome, handleCadastrarCateg } = useCategoriaForm(carregarCategorias);
-   const { deletarCategoria } = useDeleteCateg();
+   useEffect(() => {
+      carregarCategorias();
+   }, []);
+
+   const handleSalvar = async () => {
+      try {
+         if (nome.trim() === '') {
+            Alert.alert('Atenção', 'Digite um nome para a categoria.');
+            return;
+         }
+         if (categoriaEditando) {
+            await editarCategoria(categoriaEditando.key, { nome });
+            setCategoriaEditando(null);
+         } else {
+            await cadastrarCategoria({ nome });
+         }
+         setNome('');
+         await carregarCategorias();
+      } catch (error) {
+         console.error('Erro ao salvar categoria:', error);
+         Alert.alert('Erro', 'Não foi possível salvar a categoria. Tente novamente.');
+      }
+   };
+
+   const handleEdit = (id) => {
+      const categoria = itens.find(item => item.key === id);
+      if (categoria) {
+         setCategoriaEditando(categoria);
+         setNome(categoria.nome);
+      }
+   };
 
    const handleDelete = (id) => {
       Alert.alert('Confirmar exclusão', 'Tem certeza que deseja excluir esta categoria?', [
@@ -39,26 +64,16 @@ export default function Categorias() {
             style: 'destructive',
             onPress: async () => {
                try {
-                  const sucesso = await deletarCategoria(id);
-                  if (sucesso) {
-                     await carregarCategorias();
-                  }
+                  await deletarCategoria(id);
+                  await carregarCategorias();
                } catch (error) {
                   console.error('Erro ao excluir categoria:', error);
+                  Alert.alert('Erro', 'Não foi possível excluir a categoria. Tente novamente.');
                }
             },
          },
       ]);
    };
-
-   const handleEdit = (id) => {
-      // TODO: Implementar edição
-      console.log('Editar categoria:', id);
-   };
-
-   useEffect(() => {
-      carregarCategorias();
-   }, []);
 
    return (
       <KeyboardAvoidingView
@@ -85,8 +100,8 @@ export default function Categorias() {
             </ButtonC>
          </View>
 
-         <ButtonC style={styles.btn} onPress={handleCadastrarCateg}>
-            <Text>Salvar</Text>
+         <ButtonC style={styles.btn} onPress={handleSalvar}>
+            <Text>{categoriaEditando ? 'Atualizar' : 'Salvar'}</Text>
          </ButtonC>
 
          <View style={styles.containerLista}>

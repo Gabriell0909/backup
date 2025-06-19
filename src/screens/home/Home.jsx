@@ -154,7 +154,7 @@ export default function Home({ navigation }) {
                ) : (
                   <ImageBackground source={bannerDefault} style={styles.cardImage} resizeMode="cover">
                      <Image
-                        source={imagemPerfil ? { uri: imagemPerfil } : Icons.DefaultAvatar}
+                        source={imagemPerfil ? { uri: imagemPerfil } : Icons.IconeAvatar}
                         style={styles.circle}
                      />
                   </ImageBackground>

@@ -18,6 +18,7 @@ import ChartIcon from "../assets/svg/Icone de Grafico.svg"
 
 import DefaultAvatar from "../assets/img/avatar.png"
 import Default from '../assets/img/default.png'
+import IconeAvatar from "../assets/img/iconeDevedores.png"
 
 export default {
     chart,
@@ -36,5 +37,6 @@ export default {
     ChartIcon,
     DefaultAvatar,
     Default,
+    IconeAvatar,
 };
 

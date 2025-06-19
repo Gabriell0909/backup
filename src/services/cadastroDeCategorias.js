@@ -3,7 +3,7 @@ import { db } from '../Config/FirebaseConfig';
 
 export const CadastrarCategoria = async (categ) => {
    try {
-      const catgeref = await addDoc(collection(db, 'categorias'), categ);
+      const catgeref = await addDoc(collection(db, 'categoria'), categ);
       return catgeref.id;
    } catch (error) {
       console.log('erro ao cadastrar categoria', error);

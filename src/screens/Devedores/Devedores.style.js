@@ -30,7 +30,11 @@ export const styles = StyleSheet.create({
       justifyContent:'center',
       width: '25%',
       gap:5,
+      marginTop:10,
+      marginBottom:40,
       flexDirection:'row',
+      // borderWidth:0,
+      // elevation:8,
    },
 
    btn:{
@@ -40,8 +44,11 @@ export const styles = StyleSheet.create({
    containerButton: {
       width: '100%',
       alignItems: 'flex-start',
+      justifyContent:'center',
       paddingStart: 19,
       bottom: 30,
+      top: 10,
+      
    },
 
    containerLista:{

@@ -10,20 +10,25 @@ import { DevedorItem } from '../../components/lista/devedorItem';
 import { buscarDevedores } from '../../services/devedoresService';
 import { useDevedorForm } from '../../Hooks/useFormDevedor';
 import { useDeleteDevedor } from '../../Hooks/useDeleteDevedores';
+import { useEditDevedor } from '../../Hooks/useEditDevedor';
 
 export default function Devedores() {
    const [items, setItems] = useState([]);
+   const [devedorEditando, setDevedorEditando] = useState(null);
 
    const carregarDevedores = async () => {
       try {
          const dadosFormatados = await buscarDevedores();
          setItems(dadosFormatados);
       } catch (error) {
-         console.log('erro ao buscar devedores', error);
+         console.error('Erro ao buscar devedores:', error);
+         Alert.alert('Erro', 'Não foi possível carregar os devedores. Tente novamente.');
       }
    };
+
    const { nome, setNome, handleCadastrarDevedor } = useDevedorForm(carregarDevedores);
    const { deletarDevedor } = useDeleteDevedor();
+   const { handleEditDevedor } = useEditDevedor(carregarDevedores);
 
    useEffect(() => {
       carregarDevedores();
@@ -43,10 +48,34 @@ export default function Devedores() {
                   }
                } catch (error) {
                   console.error('Erro ao excluir devedor:', error);
+                  Alert.alert('Erro', 'Não foi possível excluir o devedor. Tente novamente.');
                }
             },
          },
       ]);
+   };
+
+   const handleEdit = (id) => {
+      const devedor = items.find(item => item.key === id);
+      if (devedor) {
+         setDevedorEditando(devedor);
+         setNome(devedor.nome);
+      }
+   };
+
+   const handleSalvar = async () => {
+      try {
+         if (devedorEditando) {
+            await handleEditDevedor(devedorEditando.key, { nome });
+            setDevedorEditando(null);
+         } else {
+            await handleCadastrarDevedor();
+         }
+         setNome('');
+      } catch (error) {
+         console.error('Erro ao salvar devedor:', error);
+         Alert.alert('Erro', 'Não foi possível salvar o devedor. Tente novamente.');
+      }
    };
 
    return (
@@ -60,6 +89,7 @@ export default function Devedores() {
             <Text style={styles.title}>Devedores</Text>
          </Card>
 
+         <View style={styles.containerButton}>
          <Input
             style={styles.inputs}
             placeholder="Digite um nome para o devedor"
@@ -67,15 +97,14 @@ export default function Devedores() {
             onChangeText={setNome}
          />
 
-         <View style={styles.containerButton}>
             <ButtonC style={styles.buttonC}>
                <Ionicons name="person-circle-outline" size={32} />
                <Text>Icone</Text>
             </ButtonC>
          </View>
 
-         <ButtonC style={styles.btn} onPress={handleCadastrarDevedor}>
-            <Text>Salvar</Text>
+         <ButtonC style={styles.btn} onPress={handleSalvar}>
+            <Text>{devedorEditando ? 'Atualizar' : 'Salvar'}</Text>
          </ButtonC>
 
          <View style={styles.containerLista}>
@@ -84,7 +113,13 @@ export default function Devedores() {
                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                data={items}
                renderItem={({ item }) => {
-                  return <DevedorItem nome={item.nome} onDelete={() => handleDelete(item.key)} />;
+                  return (
+                     <DevedorItem 
+                        nome={item.nome} 
+                        onDelete={() => handleDelete(item.key)}
+                        onEdit={() => handleEdit(item.key)}
+                     />
+                  );
                }}
             />
          </View>
