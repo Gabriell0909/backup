@@ -144,4 +144,31 @@ export const styles = StyleSheet.create({
       borderRadius: 10,
       paddingStart: 10,
    },
+
+   editTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: 10,
+      textAlign: 'center',
+   },
+
+   editButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      gap: 10,
+   },
+
+   cancelButton: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 12,
+   },
+
+   saveButton: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 12,
+   },
 });

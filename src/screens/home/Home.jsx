@@ -21,9 +21,13 @@ import WalletDetail from './components/wallet/walletDetail.js';
 import { buscarTiposDeConta } from '../../services/tipoContaService';
 import { ContaItem } from './components/listaSaldo/ContaItem.jsx';
 import { cadastrarConta } from '../../services/cadastroDeContas';
+import { editarConta } from '../../services/editarConta';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../Config/FirebaseConfig';
 import CustomAlert from '../../components/modal.jsx';
+import CustomModal from './components/modal/modalCustom.jsx';
+import ModalDesable from './components/modal/modalDesable.jsx';
+
 
 export default function Home({ navigation }) {
    useFocusEffect(
@@ -48,6 +52,14 @@ export default function Home({ navigation }) {
 
    const [contas, setContas] = useState([]);
    const [alertVisible, setAlertVisible] = useState(false);
+   const [modalDesableVisible, setModalDesableVisible] = useState(false);
+
+   // Estados para edição
+   const [isEditing, setIsEditing] = useState(false);
+   const [contaEmEdicao, setContaEmEdicao] = useState(null);
+   const [nomeContaEdit, setNomeContaEdit] = useState('');
+   const [valorContaEdit, setValorContaEdit] = useState('');
+   const [tipoContaEdit, setTipoContaEdit] = useState(null);
 
    const buscarContas = async () => {
       try {
@@ -127,18 +139,76 @@ export default function Home({ navigation }) {
    const imagemValida = backgroundImage?.uri?.length > 0;
 
    const sheetRef = useRef(null);
+   const sheetEditRef = useRef(null);
    const bannerDefault = require('../../assets/img/banner.png');
 
    const [open, setOpen] = useState(false);
    const [value, setValue] = useState(null);
    const [items, setItems] = useState([]);
 
+   // Estados para dropdown de edição
+   const [openEdit, setOpenEdit] = useState(false);
+
    const [nomeConta, setNomeConta] = useState('');
    const [valorConta, setValorConta] = useState('');
+
+   const [modalVisible, setModalVisible] = useState(false);
+   const [selectedItem, setSelectedItem] = useState(null);
+
+   const abrirEdicao = (conta) => {
+      setContaEmEdicao(conta);
+      setNomeContaEdit(conta.nome);
+      setValorContaEdit(conta.valor.toString());
+      setTipoContaEdit(conta.tipo);
+      setIsEditing(true);
+      setModalVisible(false);
+      setSelectedItem(null);
+      sheetEditRef.current?.snapToIndex(0);
+   };
+
+   const handleSalvarEdicao = async () => {
+      if (!nomeContaEdit || !valorContaEdit || !tipoContaEdit) {
+         setAlertVisible(true);
+         return;
+      }
+
+      try {
+         const dadosAtualizados = {
+            nome: nomeContaEdit,
+            valor: Number(valorContaEdit),
+            tipo: tipoContaEdit,
+         };
+
+         await editarConta(contaEmEdicao.key, dadosAtualizados);
+
+         Alert.alert('Sucesso', 'Conta editada com sucesso!');
+         setNomeContaEdit('');
+         setValorContaEdit('');
+         setTipoContaEdit(null);
+         setIsEditing(false);
+         setContaEmEdicao(null);
+         sheetEditRef.current?.close();
+         buscarContas();
+      } catch (error) {
+         console.error('Erro ao editar conta:', error);
+         setAlertVisible(true);
+      }
+   };
+
+   // Função para cancelar edição
+   const cancelarEdicao = () => {
+      setNomeContaEdit('');
+      setValorContaEdit('');
+      setTipoContaEdit(null);
+      setIsEditing(false);
+      setContaEmEdicao(null);
+      sheetEditRef.current?.close();
+   };
 
    return (
       <SafeAreaProvider>
          <SafeAreaView style={{ flex: 1 }}>
+         
             <View style={styles.container}>
                {imagemValida ? (
                   <ImageBackground
@@ -184,8 +254,10 @@ export default function Home({ navigation }) {
                                  nome={item.nome}
                                  tipo={tipoConta ? tipoConta.label : item.tipo}
                                  valor={currencyFormatter.format(item.valor)}
-                                 onPress={() => alert(item.nome)}
-                                 onLongPress={() => {}}
+                                 onLongPress={() => {
+                                    setSelectedItem(item);
+                                    setModalVisible(true);
+                                 }}
                               />
                            );
                         }}
@@ -246,6 +318,29 @@ export default function Home({ navigation }) {
                   message="Preencha todos os campos"
                />
 
+            <CustomModal
+               visible={modalVisible}
+               onClose={() => {
+                  setModalVisible(false);
+                  setSelectedItem(null);
+               }}
+               item={selectedItem}
+               onDelete={async () => {
+                  setModalDesableVisible(true);
+                  setSelectedItem(null);
+               }}
+               onEdit={() => {
+                  abrirEdicao(selectedItem);
+               }}
+            />
+
+            <ModalDesable
+               visible={modalDesableVisible}
+               onClose={() => {
+                  setModalDesableVisible(false);
+               }}
+            />
+
                <Input placeholder="Nome" value={nomeConta} onChangeText={setNomeConta} />
 
                <CurrencyInput
@@ -287,6 +382,69 @@ export default function Home({ navigation }) {
                   <Text> Salvar </Text>
                </ButtonS>
             </BottomSheetCustomHome>
+
+            {/* Bottom Sheet de Edição */}
+            <BottomSheetCustomHome sheetRef={sheetEditRef}>
+               <CustomAlert
+                  visible={alertVisible}
+                  onClose={() => setAlertVisible(false)}
+                  message="Preencha todos os campos"
+               />
+
+               <Text style={styles.editTitle}>Editar Conta</Text>
+
+               <Input 
+                  placeholder="Nome" 
+                  value={nomeContaEdit} 
+                  onChangeText={setNomeContaEdit} 
+               />
+
+               <CurrencyInput
+                  style={styles.currencyInput}
+                  placeholder="R$ 0,00"
+                  value={valorContaEdit}
+                  onChangeValue={setValorContaEdit}
+                  keyboardType="numeric"
+                  prefix="R$"
+                  delimiter="."
+                  separator=","
+                  precision={2}
+               />
+
+               <View style={styles.viewIcon}>
+                  <Text>Ícone</Text>
+                  <ButtonS style={styles.selectIcon}>
+                     <Ionicons name="shapes-outline" size={32} />
+                  </ButtonS>
+               </View>
+
+               <View>
+                  <Text>Tipo de conta</Text>
+                  <DropDownPicker
+                     open={openEdit}
+                     value={tipoContaEdit}
+                     items={items}
+                     setOpen={setOpenEdit}
+                     setValue={setTipoContaEdit}
+                     setItems={setItems}
+                     placeholder="Escolha uma opção"
+                     style={styles.dropdown}
+                     dropDownContainerStyle={styles.dropdownBox}
+                     placeholderStyle={styles.placeholder}
+                  />
+               </View>
+
+               <View style={styles.editButtons}>
+                  <ButtonS style={styles.cancelButton} onPress={cancelarEdicao}>
+                     <Text>Cancelar</Text>
+                  </ButtonS>
+                  <ButtonS style={styles.saveButton} onPress={handleSalvarEdicao}>
+                     <Text>Salvar</Text>
+                  </ButtonS>
+               </View>
+            </BottomSheetCustomHome>
+
+            
          </SafeAreaView>
       </SafeAreaProvider>
    );
