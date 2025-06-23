@@ -163,12 +163,14 @@ export const styles = StyleSheet.create({
    cancelButton: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: 12,
+      paddingVertical: 5,
+      marginTop: 0,
    },
 
    saveButton: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: 12,
+      paddingVertical: 5,
+      marginTop: 0,
    },
 });

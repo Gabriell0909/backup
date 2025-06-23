@@ -71,7 +71,9 @@ export default function Home({ navigation }) {
 
          contasFormatadas.sort((a, b) => a.timestamp - b.timestamp);
 
-         setContas(contasFormatadas);
+         // Filtrar apenas contas ativas
+         const contasAtivas = contasFormatadas.filter((conta) => conta.ativa !== false);
+         setContas(contasAtivas);
       } catch (error) {
          console.error('Erro ao buscar contas:', error);
 
@@ -155,6 +157,8 @@ export default function Home({ navigation }) {
    const [modalVisible, setModalVisible] = useState(false);
    const [selectedItem, setSelectedItem] = useState(null);
 
+   const [contaParaDesativar, setContaParaDesativar] = useState(null);
+
    const abrirEdicao = (conta) => {
       setContaEmEdicao(conta);
       setNomeContaEdit(conta.nome);
@@ -203,6 +207,20 @@ export default function Home({ navigation }) {
       setIsEditing(false);
       setContaEmEdicao(null);
       sheetEditRef.current?.close();
+   };
+
+   // Função para desativar conta
+   const handleDesativarConta = async () => {
+      if (!contaParaDesativar) return;
+      try {
+         await editarConta(contaParaDesativar.key, { ativa: false });
+         setModalDesableVisible(false);
+         setContaParaDesativar(null);
+         buscarContas();
+         Alert.alert('Sucesso', 'Conta desativada com sucesso!');
+      } catch (error) {
+         Alert.alert('Erro', 'Não foi possível desativar a conta.');
+      }
    };
 
    return (
@@ -326,6 +344,7 @@ export default function Home({ navigation }) {
                }}
                item={selectedItem}
                onDelete={async () => {
+                  setContaParaDesativar(selectedItem);
                   setModalDesableVisible(true);
                   setSelectedItem(null);
                }}
@@ -338,6 +357,12 @@ export default function Home({ navigation }) {
                visible={modalDesableVisible}
                onClose={() => {
                   setModalDesableVisible(false);
+                  setContaParaDesativar(null);
+               }}
+               onDelete={handleDesativarConta}
+               onEdit={() => {
+                  setModalDesableVisible(false);
+                  setContaParaDesativar(null);
                }}
             />
 
