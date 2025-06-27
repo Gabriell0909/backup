@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { cadastrarGasto } from '../services/gastoService';
+import { editarConta } from '../services/editarConta';
+import { buscarContas } from '../services/cadastroDeContas';
 import { Alert } from 'react-native';
 
 export const useGasto = (onSuccess) => {
@@ -15,6 +17,26 @@ export const useGasto = (onSuccess) => {
    const [parcelas, setParcelas] = useState(1);
    const [loading, setLoading] = useState(false);
 
+   // Função para converter dateString para data local
+   const converterDataParaLocal = (dateString) => {
+      if (!dateString) return null;
+
+      console.log('Data original (dateString):', dateString);
+
+      // dateString vem no formato "YYYY-MM-DD"
+      const [ano, mes, dia] = dateString.split('-').map(Number);
+
+      console.log('Ano, mês, dia:', ano, mes, dia);
+
+      // Criar data no fuso horário local
+      const dataLocal = new Date(ano, mes - 1, dia, 12, 0, 0, 0); // meio-dia para evitar problemas de fuso horário
+
+      console.log('Data convertida (ISO):', dataLocal.toISOString());
+      console.log('Data convertida (local):', dataLocal.toLocaleDateString('pt-BR'));
+
+      return dataLocal.toISOString();
+   };
+
    const handleSalvarGasto = async () => {
       if (!titulo || !descricao || !conta || !categoria || !data || !valor || !tipo) {
          Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
@@ -22,20 +44,63 @@ export const useGasto = (onSuccess) => {
       }
       setLoading(true);
       try {
-         const gasto = {
-            titulo,
-            devedor: devedor ? devedor : 'proprio',
-            descricao,
-            conta,
-            categoria,
-            data,
-            valor: Number(valor),
-            tipo,
-            recorrencia: tipo === 'recorrente' ? recorrencia : null,
-            parcelas: tipo === 'parcelado' ? parcelas : null,
-            criadoEm: new Date().toISOString(),
-         };
-         await cadastrarGasto(gasto);
+         // Buscar contas para garantir saldo atualizado
+         const contas = await buscarContas();
+         const contaSelecionada = contas.find((c) => c.key === (conta.key || conta));
+         if (!contaSelecionada) throw new Error('Conta não encontrada');
+
+         // Converter a data para o formato correto
+         const dataConvertida = converterDataParaLocal(data);
+
+         if (tipo === 'parcelado' && parcelas > 1) {
+            const valorParcela = Number(valor) / parcelas;
+            const dataInicial = new Date(dataConvertida);
+            for (let i = 0; i < parcelas; i++) {
+               const dataParcela = new Date(dataInicial);
+               dataParcela.setMonth(dataParcela.getMonth() + i);
+               const gastoParcela = {
+                  titulo: `${titulo} (${i + 1}/${parcelas})`,
+                  devedor: devedor ? devedor : 'proprio',
+                  descricao,
+                  conta: contaSelecionada.key,
+                  categoria,
+                  data: dataParcela.toISOString(),
+                  valor: Number(valorParcela),
+                  tipo: 'parcelado',
+                  parcelaAtual: i + 1,
+                  parcelas,
+                  criadoEm: new Date().toISOString(),
+               };
+               await cadastrarGasto(gastoParcela);
+               // Descontar valor da parcela do saldo da conta
+               await editarConta(contaSelecionada.key, {
+                  ...contaSelecionada,
+                  valor: Number(contaSelecionada.valor) - Number(valorParcela),
+               });
+               // Atualizar saldo local para as próximas parcelas
+               contaSelecionada.valor = Number(contaSelecionada.valor) - Number(valorParcela);
+            }
+         } else {
+            const gasto = {
+               titulo,
+               devedor: devedor ? devedor : 'proprio',
+               descricao,
+               conta: contaSelecionada.key,
+               categoria,
+               data: dataConvertida,
+               valor: Number(valor),
+               tipo,
+               recorrencia: tipo === 'recorrente' ? recorrencia : null,
+               parcelas: tipo === 'parcelado' ? parcelas : null,
+               criadoEm: new Date().toISOString(),
+            };
+            await cadastrarGasto(gasto);
+            // Descontar valor do saldo da conta
+            await editarConta(contaSelecionada.key, {
+               ...contaSelecionada,
+               valor: Number(contaSelecionada.valor) - Number(valor),
+            });
+         }
          if (onSuccess) onSuccess();
          // Limpar campos
          setTitulo('');
@@ -57,17 +122,27 @@ export const useGasto = (onSuccess) => {
    };
 
    return {
-      titulo, setTitulo,
-      devedor, setDevedor,
-      descricao, setDescricao,
-      conta, setConta,
-      categoria, setCategoria,
-      data, setData,
-      valor, setValor,
-      tipo, setTipo,
-      recorrencia, setRecorrencia,
-      parcelas, setParcelas,
+      titulo,
+      setTitulo,
+      devedor,
+      setDevedor,
+      descricao,
+      setDescricao,
+      conta,
+      setConta,
+      categoria,
+      setCategoria,
+      data,
+      setData,
+      valor,
+      setValor,
+      tipo,
+      setTipo,
+      recorrencia,
+      setRecorrencia,
+      parcelas,
+      setParcelas,
       loading,
       handleSalvarGasto,
    };
-}; 
+};

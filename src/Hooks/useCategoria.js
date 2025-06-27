@@ -1,9 +1,13 @@
-import { CadastrarCategoria, editarCategoria, deletarCategoria, buscarCategorias } from "../services/categoriaService";
-import { useState } from "react";
-import { Alert } from "react-native";
+import {
+   cadastrarCategoria,
+   editarCategoria,
+   deletarCategoria,
+   buscarCategorias,
+} from '../services/categoriaService';
+import { useState } from 'react';
+import { Alert } from 'react-native';
 
 export const useCategoriaForm = (onSuccess) => {
-
    const [nome, setNome] = useState('');
    const handleCadastrarCateg = async () => {
       if (!nome.trim()) {
@@ -16,7 +20,7 @@ export const useCategoriaForm = (onSuccess) => {
             icone: null,
          };
 
-         const id = await CadastrarCategoria(dadosCategorias);
+         const id = await cadastrarCategoria(dadosCategorias);
 
          if (id) {
             setNome('');
@@ -25,34 +29,41 @@ export const useCategoriaForm = (onSuccess) => {
       } catch (error) {
          console.log('erro ao cadastar', error);
       }
-    };
+   };
 
-    const handleEditarCategoria  = async (id, dadosAtualizados) => {
+   const handleEditarCategoria = async (id, dadosAtualizados) => {
       try {
          await editarCategoria(id, dadosAtualizados);
          if (onSuccess) onSuccess();
       } catch (error) {
          console.log('erro ao editar', error);
       }
-    }
+   };
 
-    const handleDeletarCategoria = async (id) => {
+   const handleDeletarCategoria = async (id) => {
       try {
          await deletarCategoria(id);
          if (onSuccess) onSuccess();
       } catch (error) {
          console.log('erro ao deletar', error);
       }
-    }
+   };
 
-    const handleBuscarCategorias = async () => {
+   const handleBuscarCategorias = async () => {
       try {
          const categorias = await buscarCategorias();
          if (onSuccess) onSuccess(categorias);
       } catch (error) {
          console.log('erro ao buscar', error);
       }
-    }
+   };
 
-    return { nome, setNome, handleCadastrarCateg, handleEditarCategoria, handleDeletarCategoria, handleBuscarCategorias };
+   return {
+      nome,
+      setNome,
+      handleCadastrarCateg,
+      handleEditarCategoria,
+      handleDeletarCategoria,
+      handleBuscarCategorias,
+   };
 };

@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { FlatList, ScrollView, Text, View, TouchableOpacity, Alert } from 'react-native';
 import { useRef, useState } from 'react';
 import Card from '../../components/card';
 import { styles } from './despesas.style';
@@ -6,14 +6,38 @@ import ButtonCustom from '../../components/customButton';
 import Divider from '../../components/divider';
 import { ListaItem } from '../../components/lista/despesasItem';
 import { useDespesas } from '../../Hooks/useDespesas';
+import { useContas } from '../../Hooks/useContas';
 import BottomSheetCustom from '../../components/bottomSheet';
 import { Ionicons } from '@expo/vector-icons';
+import CustomModal from '../home/components/modal/modalDesable';
+import CustomAlert from '../../components/modal';
 
 export default function Despesa() {
-   const { despesasFiltradas, loading, carregarDespesas, marcarComoPago, reverterParaPendente } =
-      useDespesas();
+   const { carregarContas } = useContas();
+
+   const {
+      despesasFiltradas,
+      loading,
+      filtroAtivo,
+      carregarDespesas,
+      marcarComoPago,
+      reverterParaPendente,
+      deletarDespesa,
+      aplicarFiltroPeriodo,
+      calcularTotalDespesas,
+      calcularTotalPendente,
+      calcularTotalPago,
+   } = useDespesas(carregarContas);
    const bottomSheetRef = useRef(null);
    const [despesaSelecionada, setDespesaSelecionada] = useState(null);
+   const [modalVisible, setModalVisible] = useState(false);
+   const [alertVisible, setAlertVisible] = useState(false);
+   const [alertMessage, setAlertMessage] = useState('');
+
+   // Função para obter o estilo do botão de filtro
+   const getFiltroButtonStyle = (periodo) => {
+      return [styles.filtroBtn, filtroAtivo === periodo && styles.filtroBtnAtivo];
+   };
 
    const abrirBottomSheet = (despesa) => {
       setDespesaSelecionada(despesa);
@@ -36,13 +60,48 @@ export default function Despesa() {
       }
    };
 
+   const deletarDespesaSelecionada = () => {
+      if (despesaSelecionada) {
+         Alert.alert(
+            'Confirmar Exclusão',
+            'Tem certeza que deseja deletar esta despesa? Esta ação não pode ser desfeita.',
+            [
+               {
+                  text: 'Cancelar',
+                  style: 'cancel',
+               },
+               {
+                  text: 'Deletar',
+                  style: 'destructive',
+                  onPress: () => {
+                     deletarDespesa(despesaSelecionada.key);
+                     fecharBottomSheet();
+                  },
+               },
+            ],
+         );
+      }
+   };
+
    const formatarData = (data) => {
       if (!data) return 'Data não informada';
 
       try {
          const dataObj = new Date(data);
-         return dataObj.toLocaleDateString('pt-BR');
+
+         // Verificar se a data é válida
+         if (isNaN(dataObj.getTime())) {
+            return 'Data inválida';
+         }
+
+         // Formatar a data no padrão brasileiro
+         return dataObj.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+         });
       } catch (error) {
+         console.error('Erro ao formatar data:', error);
          return 'Data inválida';
       }
    };
@@ -103,7 +162,7 @@ export default function Despesa() {
       const titulo = despesaSelecionada.titulo || 'Sem título';
 
       return (
-         <View style={styles.bottomSheetContent}>
+         <View style={[styles.bottomSheetContent, { paddingVertical: 10, paddingHorizontal: 0 }]}>
             <Text style={styles.bottomSheetTitle}>Detalhes da Despesa</Text>
 
             {/* Informações da Despesa */}
@@ -129,8 +188,28 @@ export default function Despesa() {
                <View style={styles.infoRow}>
                   <Ionicons name="cash-outline" size={20} color="#666" />
                   <Text style={styles.infoLabel}>Valor:</Text>
-                  <Text style={styles.infoValue}>R$ {valor.toFixed(2)}</Text>
+                  <Text style={styles.infoValue}>
+                     {despesaSelecionada.tipo === 'parcelado' && despesaSelecionada.parcelas
+                        ? `R$ ${(valor * despesaSelecionada.parcelas).toFixed(2)}`
+                        : `R$ ${valor.toFixed(2)}`}
+                  </Text>
                </View>
+
+               {/* Se for parcelado, mostrar valor da parcela */}
+               {despesaSelecionada.tipo === 'parcelado' &&
+                  despesaSelecionada.parcelas &&
+                  despesaSelecionada.parcelaAtual && (
+                     <>
+                        <View style={styles.infoRow}>
+                           <Ionicons name="pricetag-outline" size={20} color="#666" />
+                           <Text style={styles.infoLabel}>Valor da Parcela:</Text>
+                           <Text style={styles.infoValue}>
+                              R$ {valor.toFixed(2)} ({despesaSelecionada.parcelaAtual}/
+                              {despesaSelecionada.parcelas})
+                           </Text>
+                        </View>
+                     </>
+                  )}
 
                <View style={styles.infoRow}>
                   <Ionicons name="calendar-outline" size={20} color="#666" />
@@ -179,6 +258,11 @@ export default function Despesa() {
                      <Text style={styles.actionButtonText}>Reverter para Pendente</Text>
                   </ButtonCustom>
                )}
+
+               {/* Botão de Deletar */}
+               <ButtonCustom style={styles.deleteButton} onPress={deletarDespesaSelecionada}>
+                  <Text style={styles.deleteButtonText}>Deletar Despesa</Text>
+               </ButtonCustom>
             </View>
          </View>
       );
@@ -193,18 +277,40 @@ export default function Despesa() {
          </Card>
 
          <View style={styles.containerFiltro}>
-            <ButtonCustom style={styles.filtroBtn} title="FiltroHoje" onPress={() => {}}>
-               <Text>Hoje</Text>
+            <ButtonCustom
+               style={getFiltroButtonStyle('hoje')}
+               title="FiltroHoje"
+               onPress={() => aplicarFiltroPeriodo('hoje')}
+            >
+               <Text style={filtroAtivo === 'hoje' ? styles.filtroBtnAtivoText : {}}>Hoje</Text>
             </ButtonCustom>
-            <ButtonCustom style={styles.filtroBtn} title="FiltroSemana" onPress={() => {}}>
-               <Text>Esta semana</Text>
+            <ButtonCustom
+               style={getFiltroButtonStyle('semana')}
+               title="FiltroSemana"
+               onPress={() => aplicarFiltroPeriodo('semana')}
+            >
+               <Text style={filtroAtivo === 'semana' ? styles.filtroBtnAtivoText : {}}>Esta semana</Text>
             </ButtonCustom>
-            <ButtonCustom style={styles.filtroBtn} title="FiltroMes" onPress={() => {}}>
-               <Text>Este mês</Text>
+            <ButtonCustom
+               style={getFiltroButtonStyle('mes')}
+               title="FiltroMes"
+               onPress={() => aplicarFiltroPeriodo('mes')}
+            >
+               <Text style={filtroAtivo === 'mes' ? styles.filtroBtnAtivoText : {}}>Este mês</Text>
             </ButtonCustom>
-            <ButtonCustom style={styles.filtroBtn} title="FiltroAno" onPress={() => {}}>
-               <Text>Este ano</Text>
+            <ButtonCustom
+               style={getFiltroButtonStyle('ano')}
+               title="FiltroAno"
+               onPress={() => aplicarFiltroPeriodo('ano')}
+            >
+               <Text style={filtroAtivo === 'ano' ? styles.filtroBtnAtivoText : {}}>Este ano</Text>
             </ButtonCustom>
+         </View>
+
+         {/* Total das Despesas */}
+         <View style={styles.totalContainer}>
+            <Text style={styles.totalLabel}>Total R$</Text>
+            <Text style={styles.totalValue}>R$ {calcularTotalDespesas().toFixed(2)}</Text>
          </View>
 
          <Divider style={styles.divider} />

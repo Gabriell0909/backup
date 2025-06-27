@@ -27,12 +27,16 @@ import { db } from '../../Config/FirebaseConfig';
 import CustomAlert from '../../components/modal.jsx';
 import CustomModal from './components/modal/modalCustom.jsx';
 import ModalDesable from './components/modal/modalDesable.jsx';
-
+import { useContas } from '../../Hooks/useContas';
 
 export default function Home({ navigation }) {
+   const { contas, carregarContas, calcularSaldoTotal } = useContas();
+
    useFocusEffect(
       useCallback(() => {
          StatusBar.setBarStyle('dark-content');
+         // Recarregar contas quando a tela receber foco
+         carregarContas();
          return () => StatusBar.setBarStyle('light-content');
       }, []),
    );
@@ -50,7 +54,6 @@ export default function Home({ navigation }) {
       carregarTiposDeConta();
    }, []);
 
-   const [contas, setContas] = useState([]);
    const [alertVisible, setAlertVisible] = useState(false);
    const [modalDesableVisible, setModalDesableVisible] = useState(false);
 
@@ -60,85 +63,6 @@ export default function Home({ navigation }) {
    const [nomeContaEdit, setNomeContaEdit] = useState('');
    const [valorContaEdit, setValorContaEdit] = useState('');
    const [tipoContaEdit, setTipoContaEdit] = useState(null);
-
-   const buscarContas = async () => {
-      try {
-         const querySnapshot = await getDocs(collection(db, 'conta'));
-         const contasFormatadas = querySnapshot.docs.map((doc) => ({
-            key: doc.id,
-            ...doc.data(),
-         }));
-
-         contasFormatadas.sort((a, b) => a.timestamp - b.timestamp);
-
-         // Filtrar apenas contas ativas
-         const contasAtivas = contasFormatadas.filter((conta) => conta.ativa !== false);
-         setContas(contasAtivas);
-      } catch (error) {
-         console.error('Erro ao buscar contas:', error);
-
-         Alert.alert('Erro', 'Não foi possível carregar as contas');
-      }
-   };
-
-   useEffect(() => {
-      buscarContas();
-   }, []);
-
-   const handleCadastrarConta = async () => {
-      if (!nomeConta || !valorConta || !value) {
-         setAlertVisible(true);
-         return;
-      }
-
-      try {
-         const dadosDaConta = {
-            nome: nomeConta,
-            valor: Number(valorConta),
-            icone: null,
-            tipo: value,
-            timestamp: new Date().getTime(),
-         };
-
-         const id = await cadastrarConta(dadosDaConta);
-
-         if (id) {
-            Alert.alert('Sucesso', 'Conta cadastrada com sucesso!');
-            setNomeConta('');
-            setValorConta('');
-            setValue(null);
-            sheetRef.current?.close();
-            buscarContas();
-         }
-      } catch (error) {
-         console.error('Erro ao cadastrar conta:', error);
-         setAlertVisible(true);
-      }
-   };
-
-   const currencyFormatter = new Intl.NumberFormat('pt-br', {
-      style: 'currency',
-      currency: 'BRL',
-   });
-
-   const [saldoTotal, setSaldoTotal] = useState(0);
-   useEffect(() => {
-      if (contas.length === 0) {
-         return setSaldoTotal(0);
-      }
-
-      const total = contas.reduce((soma, conta) => soma + conta.valor, 0);
-      setSaldoTotal(total);
-   }, [contas]);
-
-   const imagemPerfil = '';
-   const [PerfilImage, setperfilImage] = useState({ uri: imagemPerfil });
-
-   const imagemCapa = '';
-
-   const [backgroundImage, setBackgroundImage] = useState({ uri: imagemCapa });
-
-   const imagemValida = backgroundImage?.uri?.length > 0;
 
    const sheetRef = useRef(null);
    const sheetEditRef = useRef(null);
@@ -192,7 +116,7 @@ export default function Home({ navigation }) {
          setIsEditing(false);
          setContaEmEdicao(null);
          sheetEditRef.current?.close();
-         buscarContas();
+         carregarContas();
       } catch (error) {
          console.error('Erro ao editar conta:', error);
          setAlertVisible(true);
@@ -216,17 +140,63 @@ export default function Home({ navigation }) {
          await editarConta(contaParaDesativar.key, { ativa: false });
          setModalDesableVisible(false);
          setContaParaDesativar(null);
-         buscarContas();
+         carregarContas();
          Alert.alert('Sucesso', 'Conta desativada com sucesso!');
       } catch (error) {
          Alert.alert('Erro', 'Não foi possível desativar a conta.');
       }
    };
 
+   const handleCadastrarConta = async () => {
+      if (!nomeConta || !valorConta || !value) {
+         setAlertVisible(true);
+         return;
+      }
+
+      try {
+         const dadosDaConta = {
+            nome: nomeConta,
+            valor: Number(valorConta),
+            icone: null,
+            tipo: value,
+            timestamp: new Date().getTime(),
+         };
+
+         const id = await cadastrarConta(dadosDaConta);
+
+         if (id) {
+            Alert.alert('Sucesso', 'Conta cadastrada com sucesso!');
+            setNomeConta('');
+            setValorConta('');
+            setValue(null);
+            sheetRef.current?.close();
+            carregarContas();
+         }
+      } catch (error) {
+         console.error('Erro ao cadastrar conta:', error);
+         setAlertVisible(true);
+      }
+   };
+
+   const currencyFormatter = new Intl.NumberFormat('pt-br', {
+      style: 'currency',
+      currency: 'BRL',
+   });
+
+   const saldoTotal = calcularSaldoTotal();
+
+   const imagemPerfil = '';
+   const [PerfilImage, setperfilImage] = useState({ uri: imagemPerfil });
+
+   const imagemCapa = '';
+
+   const [backgroundImage, setBackgroundImage] = useState({ uri: imagemCapa });
+
+   const imagemValida = backgroundImage?.uri?.length > 0;
+
    return (
       <SafeAreaProvider>
          <SafeAreaView style={{ flex: 1 }}>
-         
             <View style={styles.container}>
                {imagemValida ? (
                   <ImageBackground
@@ -263,6 +233,7 @@ export default function Home({ navigation }) {
                         data={contas}
                         horizontal={true}
                         pagingEnabled
+                        refreshing={true}
                         itemSeparatorComponent={() => <View style={{ width: 8 }} />}
                         renderItem={({ item }) => {
                            const tipoConta = items.find((tipo) => tipo.value === item.tipo);
@@ -336,35 +307,35 @@ export default function Home({ navigation }) {
                   message="Preencha todos os campos"
                />
 
-            <CustomModal
-               visible={modalVisible}
-               onClose={() => {
-                  setModalVisible(false);
-                  setSelectedItem(null);
-               }}
-               item={selectedItem}
-               onDelete={async () => {
-                  setContaParaDesativar(selectedItem);
-                  setModalDesableVisible(true);
-                  setSelectedItem(null);
-               }}
-               onEdit={() => {
-                  abrirEdicao(selectedItem);
-               }}
-            />
+               <CustomModal
+                  visible={modalVisible}
+                  onClose={() => {
+                     setModalVisible(false);
+                     setSelectedItem(null);
+                  }}
+                  item={selectedItem}
+                  onDelete={async () => {
+                     setContaParaDesativar(selectedItem);
+                     setModalDesableVisible(true);
+                     setSelectedItem(null);
+                  }}
+                  onEdit={() => {
+                     abrirEdicao(selectedItem);
+                  }}
+               />
 
-            <ModalDesable
-               visible={modalDesableVisible}
-               onClose={() => {
-                  setModalDesableVisible(false);
-                  setContaParaDesativar(null);
-               }}
-               onDelete={handleDesativarConta}
-               onEdit={() => {
-                  setModalDesableVisible(false);
-                  setContaParaDesativar(null);
-               }}
-            />
+               <ModalDesable
+                  visible={modalDesableVisible}
+                  onClose={() => {
+                     setModalDesableVisible(false);
+                     setContaParaDesativar(null);
+                  }}
+                  onDelete={handleDesativarConta}
+                  onEdit={() => {
+                     setModalDesableVisible(false);
+                     setContaParaDesativar(null);
+                  }}
+               />
 
                <Input placeholder="Nome" value={nomeConta} onChangeText={setNomeConta} />
 
@@ -418,11 +389,7 @@ export default function Home({ navigation }) {
 
                <Text style={styles.editTitle}>Editar Conta</Text>
 
-               <Input 
-                  placeholder="Nome" 
-                  value={nomeContaEdit} 
-                  onChangeText={setNomeContaEdit} 
-               />
+               <Input placeholder="Nome" value={nomeContaEdit} onChangeText={setNomeContaEdit} />
 
                <CurrencyInput
                   style={styles.currencyInput}
@@ -468,8 +435,6 @@ export default function Home({ navigation }) {
                   </ButtonS>
                </View>
             </BottomSheetCustomHome>
-
-            
          </SafeAreaView>
       </SafeAreaProvider>
    );

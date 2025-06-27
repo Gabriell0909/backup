@@ -20,7 +20,7 @@ export default function CustomAlert({ visible, message, onClose }) {
                   alignItems: 'center',
                }}
             >
-               <Text style={{marginBottom: 20,  fontSize:15}}>{message}</Text>
+               <Text style={{ marginBottom: 20, fontSize: 15 }}>{message}</Text>
                <TouchableOpacity onPress={onClose}>
                   <Text style={{ color: '#0077b6' }}>Fechar</Text>
                </TouchableOpacity>

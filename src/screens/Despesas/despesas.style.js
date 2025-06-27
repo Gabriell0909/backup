@@ -42,8 +42,39 @@ export const styles = StyleSheet.create({
       marginTop: 10,
    },
 
+   filtroBtnAtivo: {
+      backgroundColor: 'gray',
+   },
+
+   filtroBtnAtivoText: {
+      color: 'white',
+   },
+
+   totalContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginHorizontal: 20,
+      marginTop: 20,
+      paddingVertical: 15,
+      paddingHorizontal: 20,
+      backgroundColor: 'white',
+      borderRadius: 12,
+      elevation: 2,
+   },
+
+   totalLabel: {
+      fontSize: 18,
+      fontWeight: '400',
+   },
+
+   totalValue: {
+      fontSize: 20,
+      fontWeight: '500',
+   },
+
    divider: {
-      marginTop: 30,
+      marginTop: 10,
       width: '90%',
       alignSelf: 'center',
    },
@@ -182,6 +213,19 @@ export const styles = StyleSheet.create({
 
    actionButtonText: {
       color: 'black',
+      fontSize: 16,
+      fontWeight: '600',
+   },
+
+   deleteButton: {
+      borderColor: '#f44336',
+      borderRadius: 8,
+      paddingVertical: 12,
+      alignItems: 'center',
+      marginTop: 8,
+   },
+
+   deleteButtonText: {
       fontSize: 16,
       fontWeight: '600',
    },
