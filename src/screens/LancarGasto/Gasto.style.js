@@ -62,7 +62,13 @@ export const styles = StyleSheet.create({
    },
    inputP: {
       width: '100%',
-      paddingStart: 10,
+      height: 50,
+      paddingHorizontal: 12,
+      borderWidth: 1,
+      borderColor: '#222',
+      borderRadius: 10,
+      fontSize: 16,
+      color: '#222',
    },
 
    inputDescricao: {
@@ -119,4 +125,5 @@ export const styles = StyleSheet.create({
       textAlign: 'center',
       fontSize: 20,
    },
+
 });

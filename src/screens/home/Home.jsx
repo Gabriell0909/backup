@@ -183,6 +183,15 @@ export default function Home({ navigation }) {
       currency: 'BRL',
    });
 
+   // Função personalizada para formatar saldo
+   const formatarSaldo = (valor) => {
+      const numero = Number(valor);
+      if (Math.abs(numero) < 0.005) {
+         return 'R$ 0,00';
+      }
+      return currencyFormatter.format(numero);
+   };
+
    const saldoTotal = calcularSaldoTotal();
 
    const imagemPerfil = '';
@@ -225,7 +234,7 @@ export default function Home({ navigation }) {
                   <Card>
                      <View style={styles.sectionBalance}>
                         <Text style={styles.textWallet}>Saldo geral</Text>
-                        <Text style={styles.textWallet}>{currencyFormatter.format(saldoTotal)}</Text>
+                        <Text style={styles.textWallet}>{formatarSaldo(saldoTotal)}</Text>
                         <Divider />
                         <Text style={styles.textWallet}>Minhas Contas</Text>
                      </View>
@@ -242,7 +251,7 @@ export default function Home({ navigation }) {
                               <ContaItem
                                  nome={item.nome}
                                  tipo={tipoConta ? tipoConta.label : item.tipo}
-                                 valor={currencyFormatter.format(item.valor)}
+                                 valor={formatarSaldo(item.valor)}
                                  onLongPress={() => {
                                     setSelectedItem(item);
                                     setModalVisible(true);

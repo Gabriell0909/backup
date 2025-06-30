@@ -8,6 +8,8 @@ import {
    ScrollView,
    TouchableOpacity,
    TextInput,
+   Image,
+   Dimensions,
 } from 'react-native';
 import { styles } from '../LancarGasto/Gasto.style';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -25,9 +27,12 @@ import { useGasto } from '../../Hooks/useGasto';
 import { buscarDevedores } from '../../services/devedoresService';
 import { buscarCategorias } from '../../services/categoriaService';
 import { buscarContas } from '../../services/cadastroDeContas';
+import CurrencyInput from 'react-native-currency-input';
 
 LocaleConfig.locales['pt-br'] = ptBR;
 LocaleConfig.defaultLocale = 'pt-br';
+
+const largura = Dimensions.get('window').width;
 
 export default function LancarGastos() {
    const sheetRef = useRef(null);
@@ -62,6 +67,7 @@ export default function LancarGastos() {
       setParcelas,
       loading,
       handleSalvarGasto,
+      limparCampos,
    } = useGasto();
 
    useEffect(() => {
@@ -72,7 +78,23 @@ export default function LancarGastos() {
 
    const openBottomSheet = (type) => {
       setActive(type);
+      if (type === 'calendario' && !data) {
+         const hoje = new Date();
+         const yyyy = hoje.getFullYear();
+         const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+         const dd = String(hoje.getDate()).padStart(2, '0');
+         setData(`${yyyy}-${mm}-${dd}`);
+      }
       sheetRef.current?.snapToIndex(1);
+   };
+
+   // Função para limpar todos os campos e estados
+   const handleLimparCampos = () => {
+      limparCampos();
+      setShowRecorrente(false);
+      setShowParcelas(false);
+      setParcelasInput('');
+      setActive(null);
    };
 
    return (
@@ -100,7 +122,7 @@ export default function LancarGastos() {
                      multiline={false}
                   />
                   <ButtonA style={styles.button} onPress={() => openBottomSheet('devedores')}>
-                     <Ionicons name="person-circle-outline" size={32} />
+                     <Ionicons name="person-circle-outline" size={34} color="#000" />
                      <Text>{devedor ? devedor.nome : 'Devedor'}</Text>
                   </ButtonA>
                </View>
@@ -117,7 +139,7 @@ export default function LancarGastos() {
                <View style={styles.containerGroupButton}>
                   <ButtonA style={styles.button} onPress={() => openBottomSheet('contas')}>
                      <Ionicons name="card-outline" size={32} />
-                     <Text>{conta ? conta.label : 'Conta'}</Text>
+                     <Text>{conta ? conta.nome : 'Conta'}</Text>
                   </ButtonA>
                   <ButtonA style={styles.categoria} onPress={() => openBottomSheet('categorias')}>
                      <Ionicons name="layers-outline" size={32} />
@@ -128,11 +150,15 @@ export default function LancarGastos() {
                </View>
 
                <View style={styles.containerViews}>
-                  <Input
+                  <CurrencyInput
                      style={styles.inputP}
                      placeholder="R$ 0,00"
                      value={valor}
-                     onChangeText={setValor}
+                     onChangeValue={setValor}
+                     prefix="R$ "
+                     delimiter="."
+                     separator=","
+                     precision={2}
                      keyboardType="numeric"
                   />
                </View>
@@ -184,79 +210,223 @@ export default function LancarGastos() {
                   </View>
                </View>
 
-               <ButtonA style={{ marginTop: 15 }} onPress={handleSalvarGasto} disabled={loading}>
-                  <Text style={styles.textDescription}>{loading ? 'Salvando...' : 'Salvar'}</Text>
-               </ButtonA>
+               <View style={{ flexDirection: 'row', gap: 10 }}>
+                  {/**botão para lançar um gasto */}
+
+                  <ButtonA
+                     style={{ marginTop: 10, width: '60%' }}
+                     onPress={handleSalvarGasto}
+                     disabled={loading}
+                  >
+                     <Text style={styles.textDescription}>{loading ? 'Salvando...' : 'Salvar'}</Text>
+                  </ButtonA>
+
+                  {/**botão de limpar campos */}
+                  <ButtonA style={{ width: '20%', marginTop: 10 }} onPress={handleLimparCampos}>
+                     <Ionicons name="close-outline" size={24} />
+                  </ButtonA>
+               </View>
             </View>
          </ScrollView>
 
          <BottomCustom sheetRef={sheetRef}>
             {active === 'devedores' && (
-               <View>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Selecione o devedor</Text>
+               <View
+                  style={{
+                     backgroundColor: '#fff',
+                     borderRadius: 20,
+                     padding: 20,
+                     alignItems: 'center',
+                  }}
+               >
                   {devedores.map((d) => (
-                     <ButtonA
+                     <TouchableOpacity
                         key={d.key}
                         style={{
-                           marginBottom: 5,
-                           backgroundColor: devedor && devedor.key === d.key ? '#0dd' : '#fff',
+                           flexDirection: 'row',
+                           alignItems: 'center',
+                           backgroundColor: '#fff',
+                           borderRadius: 12,
+                           marginBottom: 18,
+                           paddingVertical: 10,
+                           paddingHorizontal: 16,
+                           width: largura * 0.85,
+                           borderWidth: 1,
+                           borderColor: '#222',
+                           shadowColor: '#000',
+                           shadowOpacity: 0.05,
+                           shadowRadius: 4,
+                           elevation: 2,
                         }}
-                        onPress={() => {
-                           setDevedor(d);
-                           sheetRef.current?.close();
-                        }}
+                        onPress={() => setDevedor(devedor && devedor.key === d.key ? null : d)}
+                        activeOpacity={0.7}
                      >
-                        <Text style={{ color: devedor && devedor.key === d.key ? '#fff' : '#000' }}>
-                           {d.nome}
-                        </Text>
-                     </ButtonA>
+                        <View
+                           style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 20,
+                              marginRight: 16,
+                              backgroundColor: '#e0e0e0',
+                           }}
+                        />
+                        <Text style={{ flex: 1, fontSize: 18, color: '#222' }}>{d.nome}</Text>
+                        <Ionicons
+                           name={devedor && devedor.key === d.key ? 'checkbox-outline' : 'square-outline'}
+                           size={28}
+                           color="#222"
+                        />
+                     </TouchableOpacity>
                   ))}
+                  <TouchableOpacity
+                     style={{
+                        marginTop: 10,
+                        width: largura * 0.8,
+                        borderWidth: 1,
+                        borderColor: '#222',
+                        borderRadius: 10,
+                        paddingVertical: 12,
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                     }}
+                     onPress={() => sheetRef.current?.close()}
+                  >
+                     <Text style={{ fontSize: 20, fontWeight: '400', color: '#222' }}>Confirmar</Text>
+                  </TouchableOpacity>
                </View>
             )}
 
             {active === 'contas' && (
-               <View>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Escolha sua conta</Text>
+               <View
+                  style={{
+                     backgroundColor: '#fff',
+                     borderRadius: 20,
+                     padding: 20,
+                     alignItems: 'center',
+                  }}
+               >
                   {contas.map((c) => (
-                     <ButtonA
+                     <TouchableOpacity
                         key={c.key}
                         style={{
-                           marginBottom: 5,
-                           backgroundColor: conta && conta.key === c.key ? '#0dd' : '#fff',
+                           flexDirection: 'row',
+                           alignItems: 'center',
+                           backgroundColor: '#fff',
+                           borderRadius: 12,
+                           marginBottom: 18,
+                           paddingVertical: 10,
+                           paddingHorizontal: 16,
+                           width: largura * 0.85,
+                           borderWidth: 1,
+                           borderColor: '#222',
+                           shadowColor: '#000',
+                           shadowOpacity: 0.05,
+                           shadowRadius: 4,
+                           elevation: 2,
                         }}
-                        onPress={() => {
-                           setConta(c);
-                           sheetRef.current?.close();
-                        }}
+                        onPress={() => setConta(conta && conta.key === c.key ? null : c)}
+                        activeOpacity={0.7}
                      >
-                        <Text style={{ color: conta && conta.key === c.key ? '#fff' : '#000' }}>
-                           {c.nome}
-                        </Text>
-                     </ButtonA>
+                        <View
+                           style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 20,
+                              marginRight: 16,
+                              backgroundColor: '#e0e0e0',
+                           }}
+                        />
+                        <Text style={{ flex: 1, fontSize: 18, color: '#222' }}>{c.nome}</Text>
+                        <Ionicons
+                           name={conta && conta.key === c.key ? 'checkbox-outline' : 'square-outline'}
+                           size={28}
+                           color="#222"
+                        />
+                     </TouchableOpacity>
                   ))}
+                  <TouchableOpacity
+                     style={{
+                        marginTop: 10,
+                        width: largura * 0.8,
+                        borderWidth: 1,
+                        borderColor: '#222',
+                        borderRadius: 10,
+                        paddingVertical: 12,
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                     }}
+                     onPress={() => sheetRef.current?.close()}
+                  >
+                     <Text style={{ fontSize: 20, fontWeight: '400', color: '#222' }}>Confirmar</Text>
+                  </TouchableOpacity>
                </View>
             )}
 
             {active === 'categorias' && (
-               <View>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Categorias</Text>
+               <View
+                  style={{
+                     backgroundColor: '#fff',
+                     borderRadius: 20,
+                     padding: 20,
+                     alignItems: 'center',
+                  }}
+               >
                   {categorias.map((cat) => (
-                     <ButtonA
+                     <TouchableOpacity
                         key={cat.key}
                         style={{
-                           marginBottom: 5,
-                           backgroundColor: categoria && categoria.key === cat.key ? '#0dd' : '#fff',
+                           flexDirection: 'row',
+                           alignItems: 'center',
+                           backgroundColor: '#fff',
+                           borderRadius: 12,
+                           marginBottom: 18,
+                           paddingVertical: 10,
+                           paddingHorizontal: 16,
+                           width: largura * 0.85,
+                           borderWidth: 1,
+                           borderColor: '#222',
+                           shadowColor: '#000',
+                           shadowOpacity: 0.05,
+                           shadowRadius: 4,
+                           elevation: 2,
                         }}
-                        onPress={() => {
-                           setCategoria(cat);
-                           sheetRef.current?.close();
-                        }}
+                        onPress={() => setCategoria(categoria && categoria.key === cat.key ? null : cat)}
+                        activeOpacity={0.7}
                      >
-                        <Text style={{ color: categoria && categoria.key === cat.key ? '#fff' : '#000' }}>
-                           {cat.nome}
-                        </Text>
-                     </ButtonA>
+                        <View
+                           style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 20,
+                              marginRight: 16,
+                              backgroundColor: '#e0e0e0',
+                           }}
+                        />
+                        <Text style={{ flex: 1, fontSize: 18, color: '#222' }}>{cat.nome}</Text>
+                        <Ionicons
+                           name={
+                              categoria && categoria.key === cat.key ? 'checkbox-outline' : 'square-outline'
+                           }
+                           size={28}
+                           color="#222"
+                        />
+                     </TouchableOpacity>
                   ))}
+                  <TouchableOpacity
+                     style={{
+                        marginTop: 10,
+                        width: largura * 0.8,
+                        borderWidth: 1,
+                        borderColor: '#222',
+                        borderRadius: 10,
+                        paddingVertical: 12,
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                     }}
+                     onPress={() => sheetRef.current?.close()}
+                  >
+                     <Text style={{ fontSize: 20, fontWeight: '400', color: '#222' }}>Confirmar</Text>
+                  </TouchableOpacity>
                </View>
             )}
 

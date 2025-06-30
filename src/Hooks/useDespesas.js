@@ -90,15 +90,60 @@ export const useDespesas = (onContasUpdate) => {
       return despesasFiltradas;
    };
 
+   // Função para gerar ocorrências virtuais de recorrências
+   function gerarRecorrenciasVirtuais(listaDespesas) {
+      const novasDespesas = [...listaDespesas];
+      const hoje = new Date();
+      const limiteMeses = 12; // até 12 meses à frente
+      const limiteAnos = 5; // até 5 anos à frente
+
+      listaDespesas.forEach((despesa) => {
+         if (despesa.tipo === 'recorrente' && despesa.recorrencia && despesa.data) {
+            const dataOriginal = new Date(despesa.data);
+            if (despesa.recorrencia === 'mensal') {
+               for (let i = 1; i <= limiteMeses; i++) {
+                  const dataNova = new Date(dataOriginal);
+                  dataNova.setMonth(dataNova.getMonth() + i);
+                  // Só gera se for no futuro
+                  if (dataNova > hoje) {
+                     novasDespesas.push({
+                        ...despesa,
+                        key: `${despesa.key}_recorrente_mensal_${i}`,
+                        data: dataNova.toISOString(),
+                        recorrenciaVirtual: true,
+                     });
+                  }
+               }
+            } else if (despesa.recorrencia === 'anual') {
+               for (let i = 1; i <= limiteAnos; i++) {
+                  const dataNova = new Date(dataOriginal);
+                  dataNova.setFullYear(dataNova.getFullYear() + i);
+                  if (dataNova > hoje) {
+                     novasDespesas.push({
+                        ...despesa,
+                        key: `${despesa.key}_recorrente_anual_${i}`,
+                        data: dataNova.toISOString(),
+                        recorrenciaVirtual: true,
+                     });
+                  }
+               }
+            }
+         }
+      });
+      return novasDespesas;
+   }
+
    const carregarDespesas = async () => {
       setLoading(true);
       setError(null);
 
       try {
          const dados = await buscarGastos();
-         setDespesas(dados);
+         // Gerar recorrências virtuais
+         const dadosComRecorrencias = gerarRecorrenciasVirtuais(dados);
+         setDespesas(dadosComRecorrencias);
          // Aplicar filtro atual
-         aplicarFiltroPeriodo(filtroAtivo, dados);
+         aplicarFiltroPeriodo(filtroAtivo, dadosComRecorrencias);
       } catch (error) {
          console.error('Erro ao carregar despesas:', error);
          setError('Erro ao carregar despesas');

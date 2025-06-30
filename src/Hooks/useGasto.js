@@ -38,19 +38,22 @@ export const useGasto = (onSuccess) => {
    };
 
    const handleSalvarGasto = async () => {
-      if (!titulo || !descricao || !conta || !categoria || !data || !valor || !tipo) {
+      if (!titulo || !descricao || !categoria || !data || !valor || !tipo) {
          Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
          return;
       }
       setLoading(true);
       try {
-         // Buscar contas para garantir saldo atualizado
-         const contas = await buscarContas();
-         const contaSelecionada = contas.find((c) => c.key === (conta.key || conta));
-         if (!contaSelecionada) throw new Error('Conta não encontrada');
-
          // Converter a data para o formato correto
          const dataConvertida = converterDataParaLocal(data);
+
+         // Se uma conta foi selecionada, buscar e atualizar saldo
+         let contaSelecionada = null;
+         if (conta) {
+            const contas = await buscarContas();
+            contaSelecionada = contas.find((c) => c.key === (conta.key || conta));
+            if (!contaSelecionada) throw new Error('Conta não encontrada');
+         }
 
          if (tipo === 'parcelado' && parcelas > 1) {
             const valorParcela = Number(valor) / parcelas;
@@ -62,7 +65,7 @@ export const useGasto = (onSuccess) => {
                   titulo: `${titulo} (${i + 1}/${parcelas})`,
                   devedor: devedor ? devedor : 'proprio',
                   descricao,
-                  conta: contaSelecionada.key,
+                  conta: contaSelecionada ? contaSelecionada.key : null,
                   categoria,
                   data: dataParcela.toISOString(),
                   valor: Number(valorParcela),
@@ -72,20 +75,23 @@ export const useGasto = (onSuccess) => {
                   criadoEm: new Date().toISOString(),
                };
                await cadastrarGasto(gastoParcela);
-               // Descontar valor da parcela do saldo da conta
-               await editarConta(contaSelecionada.key, {
-                  ...contaSelecionada,
-                  valor: Number(contaSelecionada.valor) - Number(valorParcela),
-               });
-               // Atualizar saldo local para as próximas parcelas
-               contaSelecionada.valor = Number(contaSelecionada.valor) - Number(valorParcela);
+
+               // Descontar valor da parcela do saldo da conta apenas se uma conta foi selecionada
+               if (contaSelecionada) {
+                  await editarConta(contaSelecionada.key, {
+                     ...contaSelecionada,
+                     valor: Number(contaSelecionada.valor) - Number(valorParcela),
+                  });
+                  // Atualizar saldo local para as próximas parcelas
+                  contaSelecionada.valor = Number(contaSelecionada.valor) - Number(valorParcela);
+               }
             }
          } else {
             const gasto = {
                titulo,
                devedor: devedor ? devedor : 'proprio',
                descricao,
-               conta: contaSelecionada.key,
+               conta: contaSelecionada ? contaSelecionada.key : null,
                categoria,
                data: dataConvertida,
                valor: Number(valor),
@@ -95,11 +101,14 @@ export const useGasto = (onSuccess) => {
                criadoEm: new Date().toISOString(),
             };
             await cadastrarGasto(gasto);
-            // Descontar valor do saldo da conta
-            await editarConta(contaSelecionada.key, {
-               ...contaSelecionada,
-               valor: Number(contaSelecionada.valor) - Number(valor),
-            });
+
+            // Descontar valor do saldo da conta apenas se uma conta foi selecionada
+            if (contaSelecionada) {
+               await editarConta(contaSelecionada.key, {
+                  ...contaSelecionada,
+                  valor: Number(contaSelecionada.valor) - Number(valor),
+               });
+            }
          }
          if (onSuccess) onSuccess();
          // Limpar campos
@@ -119,6 +128,19 @@ export const useGasto = (onSuccess) => {
       } finally {
          setLoading(false);
       }
+   };
+
+   const limparCampos = () => {
+      setTitulo('');
+      setDevedor(null);
+      setDescricao('');
+      setConta(null);
+      setCategoria(null);
+      setData(null);
+      setValor('');
+      setTipo('unico');
+      setRecorrencia('mensal');
+      setParcelas(1);
    };
 
    return {
@@ -144,5 +166,6 @@ export const useGasto = (onSuccess) => {
       setParcelas,
       loading,
       handleSalvarGasto,
+      limparCampos,
    };
 };
