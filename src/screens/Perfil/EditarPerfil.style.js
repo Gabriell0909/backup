@@ -18,11 +18,14 @@ export const styles = StyleSheet.create({
 
    chieldContainer: {
       transform: [{ rotate: '3deg' }],
+   },
+
+   headerContent: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingTop: 20,
+      paddingTop: 42,
    },
 
    titulo: {
@@ -32,36 +35,46 @@ export const styles = StyleSheet.create({
       marginTop: 42,
    },
 
-   logoutButton: {
+   backButton: {
       padding: 8,
       borderRadius: 20,
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
    },
 
-   containerUser: {
-      alignItems: 'center',
-      paddingVertical: 20,
-      paddingHorizontal: 20,
+   saveButton: {
+      padding: 8,
+      borderRadius: 20,
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
    },
 
-   avatarContainer: {
+   scrollView: {
+      flex: 1,
+      marginTop: 20,
+   },
+
+   photoSection: {
+      alignItems: 'center',
+      paddingVertical: 30,
+   },
+
+   photoContainer: {
       position: 'relative',
       marginBottom: 15,
    },
 
-   avatar: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+   photo: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
       borderWidth: 3,
       borderColor: '#fff',
       elevation: 3,
    },
 
-   avatarPlaceholder: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+   photoPlaceholder: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
       backgroundColor: '#4ECDC4',
       justifyContent: 'center',
       alignItems: 'center',
@@ -70,67 +83,96 @@ export const styles = StyleSheet.create({
       elevation: 3,
    },
 
-   avatarText: {
-      fontSize: 32,
+   photoText: {
+      fontSize: 40,
       fontWeight: 'bold',
       color: '#fff',
    },
 
-   editAvatarButton: {
+   editPhotoButton: {
       position: 'absolute',
       bottom: 0,
       right: 0,
       backgroundColor: '#333',
-      borderRadius: 15,
-      width: 30,
-      height: 30,
+      borderRadius: 20,
+      width: 40,
+      height: 40,
       justifyContent: 'center',
       alignItems: 'center',
-      borderWidth: 2,
+      borderWidth: 3,
       borderColor: '#fff',
    },
 
-   userName: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#333',
-      marginBottom: 5,
-   },
-
-   userEmail: {
-      fontSize: 16,
-      color: '#666',
-      marginBottom: 15,
-   },
-
-   editProfileButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      borderRadius: 25,
-      borderWidth: 1,
-      borderColor: '#ddd',
-      elevation: 2,
-   },
-
-   editProfileText: {
-      marginLeft: 8,
+   photoLabel: {
       fontSize: 14,
-      color: '#333',
-      fontWeight: '500',
+      color: '#666',
+      fontStyle: 'italic',
    },
 
    divider: {
       width: '90%',
       marginVertical: 20,
-      alignSelf:'center'
+      alignSelf: 'center',
    },
 
-   menuContainer: {
+   section: {
       paddingHorizontal: 20,
       marginBottom: 20,
+   },
+
+   sectionTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: 15,
+   },
+
+   inputGroup: {
+      marginBottom: 20,
+   },
+
+   inputLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 8,
+   },
+
+   disabledInput: {
+      backgroundColor: '#f5f5f5',
+      color: '#999',
+   },
+
+   disabledText: {
+      fontSize: 12,
+      color: '#999',
+      marginTop: 5,
+      fontStyle: 'italic',
+   },
+
+   settingItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#fff',
+      paddingVertical: 15,
+      paddingHorizontal: 20,
+      marginBottom: 10,
+      borderRadius: 12,
+      elevation: 2,
+   },
+
+   settingInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+   },
+
+   settingText: {
+      fontSize: 16,
+      color: '#333',
+      marginLeft: 15,
+      fontWeight: '500',
    },
 
    menuItem: {
@@ -138,9 +180,9 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-between',
       backgroundColor: '#fff',
-      paddingVertical: 16,
+      paddingVertical: 15,
       paddingHorizontal: 20,
-      marginBottom: 12,
+      marginBottom: 10,
       borderRadius: 12,
       elevation: 2,
    },
@@ -151,29 +193,21 @@ export const styles = StyleSheet.create({
       flex: 1,
    },
 
-   menuIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginRight: 15,
-   },
-
    menuText: {
       fontSize: 16,
       color: '#333',
+      marginLeft: 15,
       fontWeight: '500',
    },
 
-   versionContainer: {
-      alignItems: 'center',
-      paddingVertical: 20,
-      paddingBottom: 40,
-   },
-
-   versionText: {
-      fontSize: 14,
-      color: '#999',
+   deleteButton: {
+      backgroundColor: '#fff',
+      paddingVertical: 15,
+      paddingHorizontal: 20,
+      marginBottom: 10,
+      borderRadius: 12,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: '#FF6B6B',
    },
 });

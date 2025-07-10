@@ -301,7 +301,12 @@ export default function Home({ navigation }) {
                   </View>
 
                   <View style={styles.cardOptions}>
-                     <ButtonS style={styles.cardActionButton}>
+                     <ButtonS
+                        style={styles.cardActionButton}
+                        onPress={() => {
+                           navigation.navigate('GraficosScreen');
+                        }}
+                     >
                         <Ionicons name="pie-chart-outline" size={42} />
                      </ButtonS>
                      <Text style={styles.text}>Gráfico</Text>

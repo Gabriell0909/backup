@@ -1,20 +1,59 @@
 import { auth } from '../Config/FirebaseConfig';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 
-export function useAuth() {
-  const [user, setUser] = useState(null);
-  const [initializing, setInitializing] = useState(true);
+// Criar contexto global
+const AuthContext = createContext();
 
-  useEffect(() => {
-    const subscriber = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-      if (initializing) {
-        setInitializing(false);
+// Provider do contexto
+export function AuthProvider({ children }) {
+   const [user, setUser] = useState(null);
+   const [initializing, setInitializing] = useState(true);
+
+   useEffect(() => {
+      const subscriber = onAuthStateChanged(auth, (currentUser) => {
+         setUser(currentUser);
+         if (initializing) {
+            setInitializing(false);
+         }
+      });
+
+      return subscriber;
+   }, [initializing]);
+
+   // Função para forçar atualização do usuário
+   const refreshUser = () => {
+      setUser(auth.currentUser);
+   };
+
+   // Função para atualizar o displayName localmente
+   const updateUserDisplayName = (newDisplayName) => {
+      console.log('AuthProvider - updateUserDisplayName chamado:', newDisplayName);
+      if (user) {
+         const updatedUser = {
+            ...user,
+            displayName: newDisplayName,
+         };
+         console.log('AuthProvider - usuário atualizado:', updatedUser);
+         setUser(updatedUser);
       }
-    });
+   };
 
-    return subscriber;
-  }, []);
+   const value = {
+      user,
+      initializing,
+      refreshUser,
+      updateUserDisplayName,
+   };
 
-  return { user, initializing };
+   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// Hook para usar o contexto
+export function useAuth() {
+   const context = useContext(AuthContext);
+   if (!context) {
+      throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+   }
+   return context;
 }
