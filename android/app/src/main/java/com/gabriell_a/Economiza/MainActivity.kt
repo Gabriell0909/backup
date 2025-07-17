@@ -1,4 +1,4 @@
-package com.economiza.app
+package com.gabriell_a.Economiza
 
 import android.os.Build
 import android.os.Bundle
