@@ -40,7 +40,7 @@ yarn-error.*
 # Arquivos de Build do Android
 /android/app/build/
 /android/.gradle/
-*.apk
+# *.apk
 *.aab
 
 # Arquivos de Keystore (Chave de Assinatura)
